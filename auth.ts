@@ -47,20 +47,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const protectedRoutes = ["/"];
-
-      if (!isLoggedIn && protectedRoutes.includes(nextUrl.pathname)) {
-        return Response.redirect(new URL("/login", nextUrl));
-      }
-
-      if (isLoggedIn && nextUrl.pathname === "/login") {
-        return Response.redirect(new URL("/findwork", nextUrl));
-      }
-
-      return true;
-    },
+    // authorized({ auth, request: { nextUrl } }) {
+    //   const isLoggedIn = !!auth?.user;
+    //   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+    
+    //   if (!isLoggedIn) {
+    //     return Response.redirect(new URL("/login", nextUrl));
+    //   }
+    
+    //   if (isLoggedIn && isAdminRoute && auth.user?.role !== "admin") {
+    //     return Response.redirect(new URL("/unauthorized", nextUrl)); // or home page
+    //   }
+    
+    //   if (isLoggedIn && nextUrl.pathname === "/login") {
+    //     return Response.redirect(new URL("/findwork", nextUrl));
+    //   }
+    
+    //   return true;
+    // },    
 
     async jwt({ token, user }) {
       if (user) {

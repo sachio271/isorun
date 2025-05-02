@@ -2,7 +2,8 @@
 
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
-import { LoginSchema } from "./zod";
+import axiosInstance from "./axiosInstance";
+import { LoginSchema, RegisterSchema } from "./zod";
 
 interface ActionState {
   error?: {
@@ -46,3 +47,31 @@ export const signInCredentials = async (
 
   return null; // return null on success to indicate no error
 };
+
+export const signUp = async (
+  formData: FormData
+) => {
+  const validated = RegisterSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validated.success) {
+    return {
+      error: validated.error.flatten().fieldErrors,
+    };
+  }
+  const data = {
+    ...validated.data,
+    role: "user",
+  }
+
+  try {
+    const response = await axiosInstance.post("/auth/register", data);
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    const message =
+      error.response?.data?.message || "Registration request failed. Please try again.";
+    return {
+      error: [message],
+    };
+  }
+}
