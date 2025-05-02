@@ -18,32 +18,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const { username, password } = validatedField.data;
-        const res = await fetch(BACKEND_URL + "/auth/login", {
-          method: "POST",
-          body: JSON.stringify({
-            username,
-            password,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log("backend response : " + res.status);
-        if (res.status == 401) {
-          console.log(res.statusText);
-
+        try {
+          const res = await fetch(BACKEND_URL + "/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          console.log("backend response : " + res.status);
+          if (!res.ok) return null;
+          const data = await res.json();
+          return {
+            id: data.user.id,
+            username: data.user.username,
+            name: data.user.name,
+            emailVerified: null, // not available in backend
+            role: data.user.role,
+            accessToken: data.accessToken,
+            expiresIn: data.expiresIn,
+          };
+        } catch (error) {
+          console.error("Error during login:", error);
           return null;
+          
         }
-        const data = await res.json();
-        return {
-          id: data.user.id,
-          username: data.user.username,
-          name: data.user.name,
-          emailVerified: null, // not available in backend
-          role: data.user.role,
-          accessToken: data.accessToken,
-          expiresIn: data.expiresIn,
-        };
       },
     }),
   ],
@@ -69,15 +71,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
     async jwt({ token, user }) {
       if (user) {
-        token.user = {
-          id: user.id || "0",
-          username: user.username,
-          name: user.name || "",
-          emailVerified: null,
-          role: user.role || "user",
+        const u = user as typeof user & {
+          username?: string;
+          role?: string;
+          name?: string;
         };
-        token.accessToken = user.accessToken;
-        token.expiresIn = user.expiresIn;
+    
+        token.user = {
+          id: u.id || "0",
+          username: u.username || "",
+          name: u.name || "",
+          emailVerified: null,
+          role: u.role || "user",
+        };
+        token.accessToken = u.accessToken;
+        token.expiresIn = u.expiresIn;
       }
       return token;
     },

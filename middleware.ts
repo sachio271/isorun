@@ -7,6 +7,10 @@ export async function middleware(request: NextRequest) {
   const session = await auth();
   const { pathname } = request.nextUrl;
 
+  if (pathname === "/register") {
+    return NextResponse.next();
+  }
+
   if (!session && pathname !== "/login") {
     return NextResponse.redirect(new URL("/login", request.url));
   }
