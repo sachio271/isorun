@@ -377,23 +377,23 @@ export default function RegistrationPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transaction?.participants.map((p, idx) => {
+                    {transaction?.participants?.map((p, idx) => {
                       return (
                         <TableRow key={idx}>
                           <TableCell>{p.fname} {p.lname}</TableCell>
-                          <TableCell>{p.master_category.name || "-"}</TableCell>
-                          <TableCell>Rp {p.master_category.price.toLocaleString()}</TableCell>
+                          <TableCell>{p.master_category?.name || "-"}</TableCell>
+                          <TableCell>Rp {p.master_category?.price.toLocaleString()}</TableCell>
                         </TableRow>
                       );
                     })}
                     <TableRow>
                       <TableCell colSpan={2} className="font-bold">Total</TableCell>
-                      <TableCell className="font-bold">Rp {transaction?.total.toLocaleString()}</TableCell>
+                      <TableCell className="font-bold">Rp {transaction?.total?.toLocaleString()}</TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
                 <p>
-                  Please transfer <strong>Rp {transaction?.total.toLocaleString()}</strong> to
+                  Please transfer <strong>Rp {transaction?.total?.toLocaleString()}</strong> to
                   the following bank account:
                 </p>
                 <ul className="text-sm text-gray-800 list-disc pl-4">
@@ -455,7 +455,7 @@ export default function RegistrationPage() {
                   </span>
 
                   <span className="font-medium text-gray-600">Total Paid:</span>
-                  <span className="col-span-2">Rp {transaction?.total.toLocaleString("id-ID")}</span>
+                  <span className="col-span-2">Rp {transaction?.total?.toLocaleString("id-ID")}</span>
                 </div>
                 <Table className="mt-4">
                   <TableHeader>
@@ -470,7 +470,7 @@ export default function RegistrationPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transaction?.participants.map((p, index) => (
+                    {transaction?.participants?.map((p, index) => (
                       <TableRow key={p.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{p.fname}</TableCell>
@@ -478,7 +478,7 @@ export default function RegistrationPage() {
                         <TableCell>{p.email}</TableCell>
                         <TableCell>{p.master_category?.name}</TableCell>
                         <TableCell>{p.size}</TableCell>
-                        <TableCell>Rp {p.master_category?.price.toLocaleString("id-ID")}</TableCell>
+                        <TableCell>Rp {p.master_category?.price?.toLocaleString("id-ID")}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
