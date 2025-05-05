@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./lib/zod";
-const BACKEND_URL = 'http://isoplusrun.wingssurya.com/api'
+const BACKEND_URL = 'http://isoplusrun.wingssurya.com/apis'
 // const BACKEND_URL = 'http://localhost:8000/api'
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
@@ -29,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               "Content-Type": "application/json",
             },
           });
-          console.log("backend response : " + res.status);
+          console.log("backend response : " + res.body);
           if (!res.ok) return null;
           const data = await res.json();
           return {
