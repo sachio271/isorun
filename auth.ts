@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./lib/zod";
-const BACKEND_URL = 'http://172.24.21.45:8000/api'
+const BACKEND_URL = 'http://isoplusrun.wingssurya.com/api'
 // const BACKEND_URL = 'http://localhost:8000/api'
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
