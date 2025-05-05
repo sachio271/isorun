@@ -5,6 +5,7 @@
 import { signUp } from "@/lib/action";
 import { RegisterSchema } from "@/lib/zod";
 import { Label } from "@radix-ui/react-label";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { showToast } from "./toast-notification";
@@ -54,16 +55,16 @@ const FormRegister = () => {
   };
 
   return (
-    <Card>
+    <Card className="bg-white/30 backdrop-blur-md shadow-lg">
         <CardHeader>
-            <CardTitle className="text-2xl">Register</CardTitle>
-            <CardDescription>
-                Create an account to start using our services.
+            <CardTitle className="text-2xl text-white">Register</CardTitle>
+            <CardDescription className="text-sm text-blue-300">
+                Create an account to start registering.
             </CardDescription>
         </CardHeader>
         <CardContent>
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-6 text-white">
                     <div className="grid gap-1">
                         <Label htmlFor="ektp">EKTP</Label>
                         <Input
@@ -71,6 +72,7 @@ const FormRegister = () => {
                             type="text"
                             name="ektp"
                             placeholder="35012345678901234"
+                            className="bg-white/30 text-white placeholder:text-white"
                             required
                         />
                         {errors.ektp && (
@@ -84,6 +86,7 @@ const FormRegister = () => {
                             type="text"
                             name="username"
                             placeholder="johnDoe"
+                            className="bg-white/30 text-white placeholder:text-white"
                             required
                         />
                         {errors.username && (
@@ -97,6 +100,7 @@ const FormRegister = () => {
                             type="text"
                             name="name"
                             placeholder="johnDoe"
+                            className="bg-white/30 text-white placeholder:text-white"
                             required
                         />
                         {errors.username && (
@@ -107,16 +111,22 @@ const FormRegister = () => {
                         <div className="flex items-center">
                             <Label htmlFor="password">Password</Label>
                         </div>
-                        <Input id="password" type="password" name="password" required />
+                        <Input 
+                            id="password" 
+                            type="password" 
+                            name="password" 
+                            placeholder="********"
+                            className="bg-white/30 text-white placeholder:text-white" 
+                            required />
                         {errors.password && (
                             <div className="text-red-500 text-sm mt-2">{errors.password[0]}</div>
                         )}
                     </div>
-                    <Button type="submit" className="w-full">
-                        {loading ? "Loading..." : "Login"}
+                    <Button type="submit" className="w-full bg-blue-400 hover:cursor-pointer">
+                        {loading ? <Loader2 className="animate-spin"/> : "Register"}
                     </Button>
                 </div>
-                <div className="mt-4 text-center text-sm">
+                <div className="mt-4 text-center text-sm text-white">
                     Already have an account?{" "}
                     <a href="/login" className="underline underline-offset-4">
                         Sign in

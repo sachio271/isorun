@@ -25,20 +25,20 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-10">How to Register</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { icon: UserPlus, title: "Step 1", desc: "Create an account" },
-            { icon: ClipboardList, title: "Step 2", desc: "Open the Register menu" },
-            { icon: BookUser, title: "Step 3", desc: "Input all required fields" },
-            { icon: BadgeCheck, title: "Step 4", desc: "Wait for admin approval" },
-            { icon: CreditCard, title: "Step 5", desc: "Proceed to payment" },
+            { icon: UserPlus, title: "Step 1", desc: "Open registration menu" },
+            { icon: ClipboardList, title: "Step 2", desc: "Input all required fields" },
+            { icon: BookUser, title: "Step 3", desc: "Wait admin to confirm your data" },
+            { icon: BadgeCheck, title: "Step 4", desc: "Proceed to payment" },
+            { icon: CreditCard, title: "Step 5", desc: "Wait admin to confirm your payment" },
             { icon: "✅", title: "Step 6", desc: "Done! You're registered." },
           ].map((step, index) => (
             <Card key={index} data-aos="zoom-in" data-aos-delay={index * 100}>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-[#263C7D] font-bold">
                   {typeof step.icon === "string" ? (
                     <span className="text-xl">{step.icon}</span>
                   ) : (
-                    <step.icon className="w-5 h-5 text-green-600" />
+                    <step.icon className="w-5 h-5 text-[#263C7D]" />
                   )}
                   {step.title}
                 </CardTitle>

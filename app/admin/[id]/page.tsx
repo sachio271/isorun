@@ -1,5 +1,6 @@
 'use client';
 
+import { ConfirmationDialog } from "@/components/confirmationDialog";
 import Header from "@/components/header";
 import { showToast } from "@/components/toast-notification";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ const TransactionDetails = () => {
   const { id } = params as { id: string };
   const { data: session } = useSession();
   const [transaction, setTransaction] = useState<Transaction>();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchTransaction();
@@ -66,10 +69,27 @@ const TransactionDetails = () => {
     });
   };
 
+  const handleActionClick = (status: string) => {
+    setStatus(status);
+    setIsDialogOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.jpg')" }}>
       <Header />
       <div className="backdrop-blur-sm min-h-screen bg-white/30 p-6 md:p-12 space-y-6">
+      <ConfirmationDialog 
+        title="Action Confirmation" 
+        description="Are you sure you want to proceed with this action?" 
+        handleConfirm={handleStatusChange} 
+        status={status} 
+        isOpen={isDialogOpen} 
+        onClose={handleCancel}
+      />
 
         {/* Status Section */}
         <Card className="border-l-4 border-blue-500 shadow-lg">
@@ -81,7 +101,7 @@ const TransactionDetails = () => {
               {transaction?.status === 1 ? "✅ Waiting Data Confirmation" : transaction?.status === 2 ? "⏳ Waiting Transfer" : transaction?.status === 3 ? "✅ Waiting Payment Confirmation" : transaction?.status === 4 ? "✅ Payment Confirmed" : "⏳ Pending"}
             </span>
             {(transaction?.status === 1 || transaction?.status === 3) && (
-                <Button onClick={() => handleStatusChange(transaction.status.toString())}>{transaction?.status === 1 ? "Confirm Data" : "Confirm Payment"}</Button>
+                <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{transaction?.status === 1 ? "Confirm Data" : "Confirm Payment"}</Button>
             )}
           </CardContent>
         </Card>
@@ -89,19 +109,37 @@ const TransactionDetails = () => {
         {/* Info + Transfer Proof */}
         <div className="flex flex-col md:flex-row gap-6">
           {/* Transaction Info (left) */}
-          <Card className="w-full md:w-2/3">
+          <Card className="w-full md:w-2/3 shadow-md rounded-2xl border">
             <CardHeader>
-              <CardTitle>Transaction Info</CardTitle>
+              <CardTitle className="text-xl font-semibold text-gray-900">Transaction Info</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-2 text-sm text-gray-700">
-              <p><strong>ID:</strong> {transaction?.id}</p>
-              <p><strong>PT:</strong> {transaction?.pt}</p>
-              <p><strong>Divisi:</strong> {transaction?.divisi}</p>
-              <p><strong>Emergency Contact:</strong> {transaction?.emergencyName} ({transaction?.emergencyPhone})</p>
-              <p><strong>Total:</strong> Rp {transaction?.total.toLocaleString("id-ID")}</p>
-              <p><strong>Date:</strong> {new Date(transaction?.createdAt || "").toLocaleString()}</p>
+            <CardContent className="grid gap-4 text-sm text-gray-700">
+              <div className="grid grid-cols-3 gap-2">
+                <span className="font-medium text-gray-600">ID:</span>
+                <span className="col-span-2">{transaction?.id}</span>
+
+                <span className="font-medium text-gray-600">PT:</span>
+                <span className="col-span-2">{transaction?.pt}</span>
+
+                <span className="font-medium text-gray-600">Divisi:</span>
+                <span className="col-span-2">{transaction?.divisi}</span>
+
+                <span className="font-medium text-gray-600">Emergency Contact:</span>
+                <span className="col-span-2">
+                  {transaction?.emergencyName} ({transaction?.emergencyPhone})
+                </span>
+
+                <span className="font-medium text-gray-600">Total:</span>
+                <span className="col-span-2">Rp {transaction?.total.toLocaleString("id-ID")}</span>
+
+                <span className="font-medium text-gray-600">Date:</span>
+                <span className="col-span-2">
+                  {transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString() : "-"}
+                </span>
+              </div>
             </CardContent>
           </Card>
+
 
           {/* Transfer Proof (right) */}
           <Card className="w-full md:w-1/3">
@@ -109,9 +147,9 @@ const TransactionDetails = () => {
               <CardTitle>Transfer Proof</CardTitle>
             </CardHeader>
             <CardContent>
-              {transaction?.transferProof ? (
+              {transaction?.transferProof !== '-' ? (
                 <Image
-                  src={transaction.transferProof}
+                  src={transaction?.transferProof || "/user.png"}
                   alt="Transfer Proof"
                   width={500}
                   height={300}
@@ -138,6 +176,7 @@ const TransactionDetails = () => {
                   <TableHead>Last Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Category</TableHead>
+                  <TableHead>Size</TableHead>
                   <TableHead>Price</TableHead>
                 </TableRow>
               </TableHeader>
@@ -149,6 +188,7 @@ const TransactionDetails = () => {
                     <TableCell>{p.lname}</TableCell>
                     <TableCell>{p.email}</TableCell>
                     <TableCell>{p.master_category?.name}</TableCell>
+                    <TableCell>{p.size}</TableCell>
                     <TableCell>Rp {p.master_category?.price.toLocaleString("id-ID")}</TableCell>
                   </TableRow>
                 ))}

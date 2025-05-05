@@ -1,7 +1,7 @@
 'use client';
 
 import AOS from "aos";
-import { LogIn, Menu, UserPlus, X } from "lucide-react";
+import { LogIn, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,8 +53,8 @@ function Header() {
               href={item.link}
               className={`py-2 px-6 rounded-md transition-all ${
                 pathname === item.link
-                  ? "underline underline-offset-4 decoration-[#1B3A1A]"
-                  : ""
+                  ? "text-blue-800 bg-white/20 backdrop-blur-md"
+                  : " hover:bg-white/5"
               }`}
             >
               {item.title}
@@ -121,13 +121,6 @@ function Header() {
                 <LogIn className="w-4 h-4" />
                 Login
               </Link>
-              <Link
-                href={"/register"}
-                className="py-2 px-6 rounded-md border border-[#1B3A1A] text-[#1B3A1A] hover:bg-[#1B3A1A]/10 flex items-center gap-2"
-              >
-                <UserPlus className="w-4 h-4" />
-                Register
-              </Link>
             </>
           )}
         </div>
@@ -160,12 +153,6 @@ function Header() {
                   className="py-2 px-6 rounded-md border bg-[#1B3A1A] text-white border-[#1B3A1A]"
                 >
                   Login
-                </Link>
-                <Link
-                  href={"/register"}
-                  className="py-2 px-6 rounded-md border border-[#1B3A1A] text-[#1B3A1A]"
-                >
-                  Register
                 </Link>
               </>
             )}

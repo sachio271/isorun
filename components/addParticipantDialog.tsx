@@ -59,6 +59,7 @@ export default function AddParticipantDialog({
     categoryName: "",
     categoryPrice: "",
     bibname: "",
+    size: "",
     email: "",
     identityId: "",
     birthplace: "",
@@ -108,6 +109,7 @@ export default function AddParticipantDialog({
         categoryId: "",
         categoryName: "",
         categoryPrice: "",
+        size: "",
         email: selectedUser.email || "",
         identityId: selectedUser.ektp || "",
         birthplace: selectedUser.birthPlace || "",
@@ -163,6 +165,7 @@ export default function AddParticipantDialog({
       !form.fname ||
       !form.lname ||
       !form.bibname ||
+      !form.size ||
       !form.email ||
       !form.identityId ||
       !form.birthplace ||
@@ -199,6 +202,7 @@ export default function AddParticipantDialog({
     formData.append("country", form.country);
     formData.append("city", form.city);
     formData.append("bloodType", form.bloodType);
+    formData.append("size", form.size);
     formData.append("categoryId", form.categoryId || "");
     formData.append("categoryName", form.categoryName || "");
     formData.append("categoryPrice", form.categoryPrice || "");
@@ -212,6 +216,7 @@ export default function AddParticipantDialog({
       categoryName: "",
       categoryPrice: "",
       bibname: "",
+      size: "",
       email: "",
       identityId: "",
       birthplace: "",
@@ -285,19 +290,40 @@ export default function AddParticipantDialog({
             <Label className="capitalize mb-2" htmlFor="fname">
               Front Name
             </Label>
-            <Input id="fname" required placeholder="Nama" value={form.fname} onChange={(e) => setForm({ ...form, fname: e.target.value })} />
+            <Input id="fname" disabled required placeholder="Nama" value={form.fname} onChange={(e) => setForm({ ...form, fname: e.target.value })} />
         </div>
         <div className="mb-2">
             <Label className="capitalize mb-2" htmlFor="lname">
               Back Name
             </Label>
-            <Input id="lname" required placeholder="Nama Belakang" value={form.lname} onChange={(e) => setForm({ ...form, lname: e.target.value })} />
+            <Input id="lname" disabled required placeholder="Nama Belakang" value={form.lname} onChange={(e) => setForm({ ...form, lname: e.target.value })} />
         </div>
         <div className="mb-2">
             <Label className="capitalize mb-2" htmlFor="bibname">
               Bib Name
             </Label>
             <Input id="bibname" required placeholder="Nama Bib" maxLength={8} value={form.bibname} onChange={(e) => setForm({ ...form, bibname: e.target.value })} />
+        </div>
+        <div className="mb-2">
+            <Label className="capitalize mb-2" htmlFor="bloodType">
+              Jersey Size
+            </Label>
+            <Select
+              value={form.size}
+              required
+              onValueChange={(val) => setForm({ ...form, size: val })}
+            >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Size" />
+            </SelectTrigger>
+            <SelectContent>
+              {["S (48cm x 66cm)", "M (50cm x 68cm)", "L (52cm x 70cm)", "XL (54cm x 72cm)", "XXL (56cm x 74cm)"].map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="mb-2">
             <Label className="capitalize mb-2" htmlFor="email">
@@ -376,7 +402,7 @@ export default function AddParticipantDialog({
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit}>Save</Button>
+          <Button onClick={handleSubmit} className="bg-[#263c7d] hover: cursor-pointer">Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

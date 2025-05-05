@@ -13,6 +13,7 @@ export type Participant = {
     country: string;
     city: string;
     bloodType: string;
+    size: string;
     categoryId: number;
     categoryName: string;
     categoryPrice: number;

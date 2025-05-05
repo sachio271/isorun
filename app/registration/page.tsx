@@ -2,6 +2,7 @@
 
 import AddParticipantDialog from "@/components/addParticipantDialog";
 import Header from "@/components/header";
+import { useLoading } from "@/components/loadingContext";
 import { showToast } from "@/components/toast-notification";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,16 +23,17 @@ import {
 import { createParticipant, createTransaction, getTransactionByUser, uploadTransactionImage } from "@/lib/api/transactionApi";
 import { Participant } from "@/types/helper/participant";
 import { Transaction } from "@/types/response/transactionResponse";
+import { Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 export default function RegistrationPage() {
+  const {showLoading, hideLoading} = useLoading();
   const { data:session } = useSession();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("register");
   const [transaction, setTransaction] = useState<Transaction>();
-  const [transactionStatus, setTransactionStatus] = useState<number>(0);  
   const [image, setImage] = useState<File | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,13 +49,14 @@ export default function RegistrationPage() {
   });
 
   const fetchTransaction = async () => {
+    
     if (!session?.accessToken) return;
 
+    showLoading();
     try {
       const trx = await getTransactionByUser(session.accessToken);
       setTransaction(trx);
       if (trx) {
-        setTransactionStatus(trx.status);
         switch (trx.status) {
           case 1:
             setActiveTab("confirmation");
@@ -71,12 +74,12 @@ export default function RegistrationPage() {
             setActiveTab("register");
         }
       } else {
-        // No transaction found
         setActiveTab("register");
       }
     } catch (err) {
       console.error("Failed to fetch transaction:", err);
     }
+    hideLoading();
   };
 
   useEffect(() => {
@@ -98,11 +101,14 @@ export default function RegistrationPage() {
       country: formData.get("country") as string,
       city: formData.get("city") as string,
       bloodType: formData.get("bloodType") as string,
+      size: formData.get("size") as string,
       categoryId: parseInt(formData.get("categoryId") as string),
       categoryName: formData.get("categoryName") as string,
       categoryPrice: parseInt(formData.get("categoryPrice") as string),
       fullName: formData.get("fullName") as string,
     };
+
+    // console.log("New participant added:", newParticipant);
   
     setParticipants((prev) => [...prev, newParticipant]);
   };
@@ -120,6 +126,23 @@ export default function RegistrationPage() {
   const handleTransaction = async () => {
     if (!session?.accessToken) {
       console.error("No access token");
+      return;
+    }
+
+    if (participants.length === 0) {
+      showToast({
+        title: "No participants added!",
+        description: "Please add at least one participant.",
+        type: "error",
+      });
+      return;
+    }
+    if (!transactionForm.pt || !transactionForm.divisi || !transactionForm.emergencyName || !transactionForm.emergencyPhone) {
+      showToast({
+        title: "Incomplete data!",
+        description: "Please fill in all fields.",
+        type: "error",
+      });
       return;
     }
 
@@ -150,6 +173,9 @@ export default function RegistrationPage() {
         participantFormData.append("city", p.city);
         participantFormData.append("bloodType", p.bloodType);
         participantFormData.append("category", p.categoryId.toString());
+        participantFormData.append("size", p.size);
+
+        // console.log("Participant form data:", participantFormData);
 
         await createParticipant(participantFormData, session?.accessToken, transactionId);
       });
@@ -158,6 +184,7 @@ export default function RegistrationPage() {
           description: "Your data was saved.",
           type: "success",
       });
+      fetchTransaction();
     } catch (error) {
         console.error(error);
         showToast({
@@ -175,6 +202,31 @@ export default function RegistrationPage() {
     }
 
     console.log("Uploading image:", image);
+
+    if (!image) {
+      showToast({
+        title: "No image selected!",
+        description: "Please select an image to upload.",
+        type: "error",
+      });
+      return;
+    }
+    if(image.size > 2 * 1024 * 1024) {
+      showToast({
+        title: "File too large!",
+        description: "Please select an image smaller than 2MB.",
+        type: "error",
+      });
+      return;
+    }
+    if(image.type !== "image/jpeg" && image.type !== "image/png") {
+      showToast({
+        title: "Invalid file type!",
+        description: "Please select a JPEG or PNG image.",
+        type: "error",
+      });
+      return;
+    }
 
     const formData = new FormData();
     if (image) {
@@ -199,6 +251,9 @@ export default function RegistrationPage() {
     }
   };
 
+  const handleDeleteParticipant = (index: number) => {
+    setParticipants(prev => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.jpg')" }}>
@@ -229,24 +284,24 @@ export default function RegistrationPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="pt">PT</Label>
-                    <Input id="pt" placeholder="Wings Surya" value={transactionForm.pt} onChange={(e) => setTransactionForm({ ...transactionForm, pt: e.target.value })} />
+                    <Input id="pt" required placeholder="Wings Surya" value={transactionForm.pt} onChange={(e) => setTransactionForm({ ...transactionForm, pt: e.target.value })} />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="divisi">Divisi</Label>
-                    <Input id="divisi" placeholder="HRD" value={transactionForm.divisi} onChange={(e) => setTransactionForm({ ...transactionForm, divisi: e.target.value })} />
+                    <Input id="divisi" required placeholder="HRD" value={transactionForm.divisi} onChange={(e) => setTransactionForm({ ...transactionForm, divisi: e.target.value })} />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="emergencyName">Emergency Contact Name</Label>
-                    <Input id="emergencyName" placeholder="Jane Doe" value={transactionForm.emergencyName} onChange={(e) => setTransactionForm({ ...transactionForm, emergencyName: e.target.value })} />
+                    <Input id="emergencyName" required placeholder="Jane Doe" value={transactionForm.emergencyName} onChange={(e) => setTransactionForm({ ...transactionForm, emergencyName: e.target.value })} />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="emergencyPhone">Emergency Contact Number</Label>
-                    <Input id="emergencyPhone" placeholder="08xxxxxxxxxx" value={transactionForm.emergencyPhone} onChange={(e) => setTransactionForm({ ...transactionForm, emergencyPhone: e.target.value })} />
+                    <Input id="emergencyPhone" required placeholder="08xxxxxxxxxx" value={transactionForm.emergencyPhone} onChange={(e) => setTransactionForm({ ...transactionForm, emergencyPhone: e.target.value })} />
                   </div>
                 </div>
 
                 <div className="mt-6">
-                  <Button type="button" onClick={addParticipant}>+ Add Participant</Button>
+                  <Button type="button" className="bg-[#263c7d] hover: cursor-pointer" onClick={addParticipant}>+ Add Participant</Button>
                 </div>
 
                 <Table className="mt-4">
@@ -255,6 +310,7 @@ export default function RegistrationPage() {
                       <TableHead>Participant</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
+                      <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -264,6 +320,16 @@ export default function RegistrationPage() {
                           <TableCell>{p.fname} {p.lname}</TableCell>
                           <TableCell>{p.categoryName || "-"}</TableCell>
                           <TableCell>Rp {p.categoryPrice}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteParticipant(idx)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -274,7 +340,7 @@ export default function RegistrationPage() {
                   </TableBody>
                 </Table>
 
-                <Button className="mt-4" onClick={handleTransaction}>
+                <Button className="mt-4 bg-[#263c7d] hover: cursor-pointer"  onClick={handleTransaction}>
                   Submit & Continue
                 </Button>
               </CardContent>
@@ -301,8 +367,33 @@ export default function RegistrationPage() {
                 <CardTitle>Step 3: Payment</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
+                <p>Details : </p>
+                <Table className="">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Participant</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Price</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transaction?.participants.map((p, idx) => {
+                      return (
+                        <TableRow key={idx}>
+                          <TableCell>{p.fname} {p.lname}</TableCell>
+                          <TableCell>{p.master_category.name || "-"}</TableCell>
+                          <TableCell>Rp {p.master_category.price.toLocaleString()}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    <TableRow>
+                      <TableCell colSpan={2} className="font-bold">Total</TableCell>
+                      <TableCell className="font-bold">Rp {transaction?.total.toLocaleString()}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
                 <p>
-                  Please transfer <strong>Rp {transaction?.total}</strong> to
+                  Please transfer <strong>Rp {transaction?.total.toLocaleString()}</strong> to
                   the following bank account:
                 </p>
                 <ul className="text-sm text-gray-800 list-disc pl-4">
@@ -311,12 +402,18 @@ export default function RegistrationPage() {
                   <li>Account Name: ISPlus Run</li>
                 </ul>
 
+                <p className="mt-4 text-red-700">
+                 * After transferring, please upload the transfer proof below as an IMAGE.
+                  Make sure to include your transaction ID in the proof.
+                </p>
+
+
                 <div className="grid gap-2">
                   <Label htmlFor="proof">Upload Transfer Proof</Label>
                   <Input id="proof" type="file" accept="image/*" onChange={handleFileChange} />
                 </div>
 
-                <Button onClick={handleUpload} >Submit Proof</Button>
+                <Button onClick={handleUpload} className="bg-[#263c7d] hover:cursor-pointer">Submit Proof</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -342,12 +439,50 @@ export default function RegistrationPage() {
               </CardHeader>
               <CardContent>
                 <p className="mb-4">Please show this information to admin on the event day:</p>
-                <ul className="text-sm text-gray-800 space-y-2">
-                  <li><strong>Transaction ID:</strong> {transaction?.id}</li>
-                  <li><strong>PT:</strong> {transaction?.pt}</li>
-                  <li><strong>Divisi:</strong> {transaction?.divisi}</li>
-                  <li><strong>Total Paid:</strong> Rp. {transaction?.total} </li>
-                </ul>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="font-medium text-gray-600">ID:</span>
+                  <span className="col-span-2">{transaction?.id}</span>
+
+                  <span className="font-medium text-gray-600">PT:</span>
+                  <span className="col-span-2">{transaction?.pt}</span>
+
+                  <span className="font-medium text-gray-600">Divisi:</span>
+                  <span className="col-span-2">{transaction?.divisi}</span>
+
+                  <span className="font-medium text-gray-600">Emergency Contact:</span>
+                  <span className="col-span-2">
+                    {transaction?.emergencyName} ({transaction?.emergencyPhone})
+                  </span>
+
+                  <span className="font-medium text-gray-600">Total Paid:</span>
+                  <span className="col-span-2">Rp {transaction?.total.toLocaleString("id-ID")}</span>
+                </div>
+                <Table className="mt-4">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>First Name</TableHead>
+                      <TableHead>Last Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Size</TableHead>
+                      <TableHead>Price</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transaction?.participants.map((p, index) => (
+                      <TableRow key={p.id}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{p.fname}</TableCell>
+                        <TableCell>{p.lname}</TableCell>
+                        <TableCell>{p.email}</TableCell>
+                        <TableCell>{p.master_category?.name}</TableCell>
+                        <TableCell>{p.size}</TableCell>
+                        <TableCell>Rp {p.master_category?.price.toLocaleString("id-ID")}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
