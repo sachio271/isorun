@@ -1,16 +1,15 @@
 'use client';
 
 import { ConfirmationDialog } from "@/components/confirmationDialog";
-import Header from "@/components/header";
 import { showToast } from "@/components/toast-notification";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getTransactionById, updateTransactionStatus } from "@/lib/api/transactionApi";
+import { deleteTransaction, getTransactionById, updateTransactionStatus } from "@/lib/api/transactionApi";
 import { Transaction } from "@/types/response/transactionResponse";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const TransactionDetails = () => {
@@ -20,6 +19,7 @@ const TransactionDetails = () => {
   const [transaction, setTransaction] = useState<Transaction>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     fetchTransaction();
@@ -48,6 +48,14 @@ const TransactionDetails = () => {
     }
     else if (status === "3") {
         newStatus = 4; // Confirm Payment
+    }
+    if (status === "-1") {
+        await handleDelete();
+        setIsDialogOpen(false);
+        return;
+    }
+    else if (status === "-2") {
+      newStatus = 2;
     }
     try {
         await updateTransactionStatus(session.accessToken, id, newStatus?.toString() ?? '1');
@@ -78,10 +86,28 @@ const TransactionDetails = () => {
     setIsDialogOpen(false);
   };
 
+  const handleDelete = async () => {
+    if (!session?.accessToken) return;
+    try {
+      await deleteTransaction(session.accessToken, id);
+      router.push("/admin");
+      showToast({
+        type: "success",
+        title: "Data Rejected",
+        description: "The transaction data was rejected successfully",
+      });
+    } catch (error) {
+      console.error("Error rejecting transaction:", error);
+      showToast({
+        type: "error",
+        title: "Transaction Reject Error",
+        description: "Failed to reject transaction data",
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.jpg')" }}>
-      <Header />
-      <div className="backdrop-blur-sm min-h-screen bg-white/30 p-6 md:p-12 space-y-6">
+    <div className="p-3md:p-9 space-y-6">
       <ConfirmationDialog 
         title="Action Confirmation" 
         description="Are you sure you want to proceed with this action?" 
@@ -98,10 +124,29 @@ const TransactionDetails = () => {
           </CardHeader>
           <CardContent className="flex items-center justify-between">
             <span className="text-sm font-medium">
-              {transaction?.status === 1 ? "✅ Waiting Data Confirmation" : transaction?.status === 2 ? "⏳ Waiting Transfer" : transaction?.status === 3 ? "✅ Waiting Payment Confirmation" : transaction?.status === 4 ? "✅ Payment Confirmed" : "⏳ Pending"}
+            {transaction?.status === 1
+              ? "✅ Waiting Data Confirmation"
+              : transaction?.status === 2
+              ? "⏳ Waiting Transfer"
+              : transaction?.status === 3
+              ? "✅ Waiting Payment Confirmation"
+              : transaction?.status === 4
+              ? "✅ Payment Confirmed"
+              : transaction?.status === -1
+              ? "❌ Data Rejected"
+              : "⏳ Pending"}
             </span>
-            {(transaction?.status === 1 || transaction?.status === 3) && (
-                <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{transaction?.status === 1 ? "Confirm Data" : "Confirm Payment"}</Button>
+            {(transaction?.status === 1) && (
+                <div className="flex gap-2">
+                  <Button className="hover: cursor-pointer bg-red-800" onClick={() => handleActionClick("-1")}>{"Reject Data"}</Button>
+                  <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{"Confirm Data"}</Button>
+                </div>
+            )}
+            {(transaction?.status === 3) && (
+              <div className="flex gap-2">
+                <Button className="hover: cursor-pointer bg-amber-600" onClick={() => handleActionClick("-2")}>{"Reupload"}</Button>
+                <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{"Confirm Payment"}</Button>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -189,7 +234,7 @@ const TransactionDetails = () => {
                     <TableCell>{p.email}</TableCell>
                     <TableCell>{p.master_category?.name}</TableCell>
                     <TableCell>{p.size}</TableCell>
-                    <TableCell>Rp {p.master_category?.price.toLocaleString("id-ID")}</TableCell>
+                    <TableCell>Rp {p.price.toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -197,7 +242,6 @@ const TransactionDetails = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 };
 

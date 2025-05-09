@@ -9,7 +9,7 @@ export default function Home() {
       <Header />
       <section className="relative h-[300px] w-full overflow-hidden">
         <Image
-          src="/banner 2.jpg"
+          src="/banner 2.webp"
           alt="Banner"
           layout="fill"
           objectFit="cover"
@@ -46,23 +46,6 @@ export default function Home() {
               <CardContent>{step.desc}</CardContent>
             </Card>
           ))}
-        </div>
-      </section>
-
-      <section className="p-6 md:p-12 grid md:grid-cols-2 gap-6">
-        <div className="bg-white shadow-md rounded-xl p-6">
-          <h2 className="text-xl font-semibold mb-2">Quick Access</h2>
-          <ul className="space-y-2">
-            <li><a href="/register" className="text-blue-600 hover:underline">Register Account</a></li>
-            <li><a href="/findwork" className="text-blue-600 hover:underline">Find Work</a></li>
-            <li><a href="/post" className="text-blue-600 hover:underline">Post a Job</a></li>
-          </ul>
-        </div>
-
-        <div className="bg-white shadow-md rounded-xl p-6">
-          <h2 className="text-xl font-semibold mb-2">Contact & Support</h2>
-          <p className="text-gray-600">Need help? Reach out to our support team for assistance.</p>
-          <a href="/contact" className="mt-2 inline-block text-blue-600 hover:underline">Contact Us</a>
         </div>
       </section>
     </main>

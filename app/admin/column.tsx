@@ -32,7 +32,7 @@ export const columns: ColumnDef<Transaction>[] = [
         let color = "";
         if(status === 1) {
             message = "Menunggu Konfirmasi Data";
-            color = "bg-green-600";
+            color = "bg-gray-800";
         }
         else if(status === 2) {
             message = "Menunggu Pembayaran";
@@ -45,6 +45,10 @@ export const columns: ColumnDef<Transaction>[] = [
         else if(status === 4) {
             message = "Pembayaran Diterima";
             color = "bg-green-600";
+        }
+        else if(status === -1) {
+            message = "Data Ditolak";
+            color = "bg-red-600";
         }
         return (
             <Badge

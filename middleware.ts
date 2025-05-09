@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
 
   // Prevent access to /login if already authenticated
   if (session && pathname === "/login") {
-    return NextResponse.redirect(new URL("/findwork", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();

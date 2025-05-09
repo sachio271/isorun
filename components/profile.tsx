@@ -1,15 +1,14 @@
 "use client";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function Profile() {
   const session = useSession();
@@ -17,13 +16,10 @@ function Profile() {
     <DropdownMenu>
       <div className="flex items-center gap-4">
         <DropdownMenuTrigger asChild className="cursor-pointer">
-          <Image
-            src={"/user.png"}
-            alt="avatar"
-            width={36}
-            height={36}
-            className="rounded-lg"
-          />
+        <Avatar>
+          <AvatarImage src="https://www.gravatar.com/avatar/?d=mp" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
         </DropdownMenuTrigger>
       </div>
       <DropdownMenuContent className="w-56" align="end">
@@ -38,10 +34,10 @@ function Profile() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => signOut({ callbackUrl: "/login" })}

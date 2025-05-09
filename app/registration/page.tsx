@@ -1,6 +1,7 @@
 "use client";
 
 import AddParticipantDialog from "@/components/addParticipantDialog";
+import { ConfirmationDialog } from "@/components/confirmationDialog";
 import Header from "@/components/header";
 import { useLoading } from "@/components/loadingContext";
 import { showToast } from "@/components/toast-notification";
@@ -29,12 +30,14 @@ import { useEffect, useState } from "react";
 
 export default function RegistrationPage() {
   const {showLoading, hideLoading} = useLoading();
+  const [kabagFree, setKabagFree] = useState(0);
   const { data:session } = useSession();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("register");
   const [transaction, setTransaction] = useState<Transaction>();
   const [image, setImage] = useState<File | null>(null);
+  const [isDialogConfirmOpen, setDialogConfirmOpen] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -84,9 +87,18 @@ export default function RegistrationPage() {
 
   useEffect(() => {
     fetchTransaction();
+    if (session?.user?.role === "KABAG") {
+      setKabagFree(2);
+    }
+    console.log("kabag free", kabagFree); 
   }, [session]);
 
   const handleAddParticipant = (formData: FormData) => {
+    const isFreeUsed = formData.get("categoryPrice") === "0";
+
+    if (isFreeUsed && kabagFree > 0) {
+      setKabagFree(prev => prev - 1);
+    }
     const newParticipant = {
       fname: formData.get("fname") as string,
       lname: formData.get("lname") as string,
@@ -106,6 +118,9 @@ export default function RegistrationPage() {
       categoryName: formData.get("categoryName") as string,
       categoryPrice: parseInt(formData.get("categoryPrice") as string),
       fullName: formData.get("fullName") as string,
+      province: formData.get("province") as string,
+      gender: formData.get("gender") as string,
+      condition: formData.get("condition") as string,
     };
 
     // console.log("New participant added:", newParticipant);
@@ -174,6 +189,10 @@ export default function RegistrationPage() {
         participantFormData.append("bloodType", p.bloodType);
         participantFormData.append("category", p.categoryId.toString());
         participantFormData.append("size", p.size);
+        participantFormData.append("province", p.province);
+        participantFormData.append("price", p.categoryPrice.toString());
+        participantFormData.append("gender", p.gender.toString());
+        participantFormData.append("condition", p.condition.toString());
 
         // console.log("Participant form data:", participantFormData);
 
@@ -252,21 +271,38 @@ export default function RegistrationPage() {
   };
 
   const handleDeleteParticipant = (index: number) => {
+    console.log(participants[index]);
+    if (participants[index].categoryPrice === 0) {
+      setKabagFree(prev => prev + 1);
+    }
     setParticipants(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleCancel = () => {
+    setDialogConfirmOpen(false);
+  }
+
   return (
-    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.jpg')" }}>
+    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.webp')" }}>
       <Header />
-      <div className="backdrop-blur-sm min-h-screen bg-white/30 p-10 md:p-18">
+      <div className="backdrop-blur-xs min-h-screen bg-white/30 p-10 md:p-18">
+      <ConfirmationDialog
+        title="Action Confirmation" 
+        description="Yakin Ingin Registrasi ? Karena setelah registrasi, pendaftaran akan menuju proses pembayaran dan data akan dikunci!" 
+        handleConfirm={handleTransaction} 
+        status={""} 
+        isOpen={isDialogConfirmOpen} 
+        onClose={handleCancel}
+      />
       <AddParticipantDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onAdd={handleAddParticipant}
         participants={participants}
+        free={kabagFree}
       />
         <Tabs value={activeTab} className="max-w-5xl mx-auto">
-          <TabsList className="grid grid-cols-5 mb-6 space-x-5">
+          <TabsList className="hidden md:flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
             <TabsTrigger value="register" disabled>Register</TabsTrigger>
             <TabsTrigger value="confirmation" disabled>Confirm</TabsTrigger>
             <TabsTrigger value="invoice" disabled>Payment</TabsTrigger>
@@ -274,6 +310,26 @@ export default function RegistrationPage() {
             <TabsTrigger value="recap" disabled>Done</TabsTrigger>
           </TabsList>
 
+          <div className="block md:hidden text-center mb-4">
+            <span className="inline-block bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm">
+              {(() => {
+                switch (activeTab) {
+                  case "register":
+                    return "Step: Register";
+                  case "confirmation":
+                    return "Step: Confirm";
+                  case "invoice":
+                    return "Step: Payment";
+                  case "payment":
+                    return "Step: Confirm";
+                  case "recap":
+                    return "Step: Done";
+                  default:
+                    return "Step: Unknown";
+                }
+              })()}
+            </span>
+          </div>
           <TabsContent value="register">
             <Card>
               <CardHeader>
@@ -281,7 +337,7 @@ export default function RegistrationPage() {
               </CardHeader>
               <CardContent className="grid gap-4">
                 {/* General Data */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="pt">PT</Label>
                     <Input id="pt" required placeholder="Wings Surya" value={transactionForm.pt} onChange={(e) => setTransactionForm({ ...transactionForm, pt: e.target.value })} />
@@ -340,7 +396,7 @@ export default function RegistrationPage() {
                   </TableBody>
                 </Table>
 
-                <Button className="mt-4 bg-[#263c7d] hover: cursor-pointer"  onClick={handleTransaction}>
+                <Button className="mt-4 bg-[#263c7d] hover: cursor-pointer"  onClick={() => setDialogConfirmOpen(true)}>
                   Submit & Continue
                 </Button>
               </CardContent>
@@ -382,7 +438,7 @@ export default function RegistrationPage() {
                         <TableRow key={idx}>
                           <TableCell>{p.fname} {p.lname}</TableCell>
                           <TableCell>{p.master_category?.name || "-"}</TableCell>
-                          <TableCell>Rp {p.master_category?.price.toLocaleString()}</TableCell>
+                          <TableCell>Rp {p.price.toLocaleString()}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -457,32 +513,34 @@ export default function RegistrationPage() {
                   <span className="font-medium text-gray-600">Total Paid:</span>
                   <span className="col-span-2">Rp {transaction?.total?.toLocaleString("id-ID")}</span>
                 </div>
-                <Table className="mt-4">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>#</TableHead>
-                      <TableHead>First Name</TableHead>
-                      <TableHead>Last Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead>Price</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transaction?.participants?.map((p, index) => (
-                      <TableRow key={p.id}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{p.fname}</TableCell>
-                        <TableCell>{p.lname}</TableCell>
-                        <TableCell>{p.email}</TableCell>
-                        <TableCell>{p.master_category?.name}</TableCell>
-                        <TableCell>{p.size}</TableCell>
-                        <TableCell>Rp {p.master_category?.price?.toLocaleString("id-ID")}</TableCell>
+                <div className="overflow-x-auto mt-4">
+                  <Table className="min-w-[700px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>#</TableHead>
+                        <TableHead>First Name</TableHead>
+                        <TableHead>Last Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Size</TableHead>
+                        <TableHead>Price</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {transaction?.participants?.map((p, index) => (
+                        <TableRow key={p.id}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{p.fname}</TableCell>
+                          <TableCell>{p.lname}</TableCell>
+                          <TableCell>{p.email}</TableCell>
+                          <TableCell>{p.master_category?.name}</TableCell>
+                          <TableCell>{p.size}</TableCell>
+                          <TableCell>Rp {p.price?.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

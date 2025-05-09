@@ -26,17 +26,20 @@ import { UserData } from "@/types/response/userResponse";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { showToast } from "./toast-notification";
+import { Checkbox } from "./ui/checkbox";
 
 export default function AddParticipantDialog({
   open,
   onClose,
   onAdd,
   participants,
+  free
 }: {
   open: boolean;
   onClose: () => void;
   onAdd: (data: FormData) => void;
   participants: { fullName: string }[]; // or adjust shape as needed
+  free: number;
 }) {
   const { data: session } = useSession();
   const [selectedUserIndex, setSelectedUserIndex] = useState("0");
@@ -45,8 +48,11 @@ export default function AddParticipantDialog({
   const availableUsers = userList.filter(
     (user) => !participants.some((p) => p.fullName === user.name)
   );
-  
-  const selectedUser = availableUsers[parseInt(selectedUserIndex)];
+  const [manualFreeClaimChecked, setManualFreeClaimChecked] = useState(false);
+  const selectedUser = availableUsers[parseInt(selectedUserIndex)] || availableUsers[0];
+  const isEmployee = selectedUser?.status === "employee";
+  const isFreeClaimChecked = (isEmployee && free > 0) || manualFreeClaimChecked;
+
   const filteredCategories = categories.filter(
     (cat) => cat.type === (selectedUser?.status === "employee" ? "employee" : "family")
   );
@@ -70,6 +76,9 @@ export default function AddParticipantDialog({
     country: "",
     city: "",
     bloodType: "",
+    province: "",
+    gender: "",
+    condition: "",
   });
 
   // useEffect(() => {
@@ -118,6 +127,7 @@ export default function AddParticipantDialog({
         address: selectedUser.address || "",
         city: selectedUser.city || "",
         bloodType: selectedUser.bloodType || "",
+        gender: selectedUser.gender || "",
       }));
     }
   }
@@ -178,7 +188,9 @@ export default function AddParticipantDialog({
       !form.bloodType ||
       !form.categoryId ||
       !form.categoryName ||
-      !form.categoryPrice
+      !form.categoryPrice ||
+      !form.province ||
+      !form.gender
     ) {
       showToast({
         title: "Validation Error",
@@ -186,6 +198,13 @@ export default function AddParticipantDialog({
         type: "error",
       });
       return;
+    }
+    let price = "0";
+    if (isFreeClaimChecked) {
+      price = "0";
+    }
+    else{
+      price = form.categoryPrice;
     }
     const formData = new FormData();
     formData.append("fullName", form.fullName);
@@ -205,7 +224,10 @@ export default function AddParticipantDialog({
     formData.append("size", form.size);
     formData.append("categoryId", form.categoryId || "");
     formData.append("categoryName", form.categoryName || "");
-    formData.append("categoryPrice", form.categoryPrice || "");
+    formData.append("categoryPrice", price);
+    formData.append("province", form.province || "");
+    formData.append("gender", form.gender);
+    formData.append("condition", form.condition || "Good Condition");
 
     onAdd(formData);
     setForm({
@@ -226,11 +248,15 @@ export default function AddParticipantDialog({
       zipcode: "",
       country: "",
       city: "",
-      bloodType: ""
+      bloodType: "",
+      province: "",
+      gender: "",
+      condition: "",
     });
     setSelectedUserIndex("0");
     onClose();
   };
+  
   
 
   return (
@@ -244,11 +270,10 @@ export default function AddParticipantDialog({
         <div className="mb-2">
           <Label className="mb-2">Register As</Label>
           <Select
-            required
             value={selectedUserIndex}
             onValueChange={(val) => {
-              setSelectedUserIndex(val)
-              // preFillFormData();
+              setSelectedUserIndex(val);
+              setManualFreeClaimChecked(false); // reset when new user is selected
             }}
           >
             <SelectTrigger className="w-full">
@@ -262,8 +287,29 @@ export default function AddParticipantDialog({
               ))}
             </SelectContent>
           </Select>
+            {free <= 0 ? (
+              <div className="text-red-500 text-sm mt-2">No free slot available</div>
+            ) : (
+              <div className="flex items-center space-x-2 mt-2">
+                <Checkbox 
+                  id="terms"
+                  checked={isFreeClaimChecked}
+                  disabled={isEmployee}
+                  onCheckedChange={(val) => {
+                    if (!isEmployee && typeof val === "boolean") {
+                      setManualFreeClaimChecked(val);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Klaim Free On This User
+                </label>
+              </div>
+          )}
         </div>
-
         <div className="mb-2">
           <Label className="mb-2">Category</Label>
           <Select
@@ -350,6 +396,27 @@ export default function AddParticipantDialog({
             <Input id="birthdate" required type="date" placeholder="Tanggal Lahir" value={form.birthdate} onChange={(e) => setForm({ ...form, birthdate: e.target.value })} />
         </div>
         <div className="mb-2">
+            <Label className="capitalize mb-2" htmlFor="gender">
+              Gender
+            </Label>
+            <Select
+              value={form.gender}
+              required
+              onValueChange={(val) => setForm({ ...form, gender: val })}
+            >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Gender" />
+            </SelectTrigger>
+            <SelectContent>
+              {["L", "P"].map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="mb-2">
             <Label className="capitalize mb-2" htmlFor="phone">
               Phone
             </Label>
@@ -372,6 +439,12 @@ export default function AddParticipantDialog({
               Country
             </Label>
             <Input id="country" required placeholder="Negara" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} />
+        </div>
+        <div className="mb-2">
+            <Label className="capitalize mb-2" htmlFor="province">
+              Province
+            </Label>
+            <Input id="province" required placeholder="Provinsi" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
         </div>
         <div className="mb-2">
             <Label className="capitalize mb-2" htmlFor="city">
@@ -399,6 +472,13 @@ export default function AddParticipantDialog({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="mb-2">
+            <Label className="capitalize mb-2" htmlFor="condition">
+              Condition
+            </Label>
+            <Input id="condition" placeholder="Kondisi" value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} />
+            <div className="text-sm text-gray-600">contoh: jantung, gangguan pernafasan, hamil</div>
         </div>
 
         <DialogFooter>

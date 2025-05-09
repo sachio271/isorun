@@ -1,18 +1,18 @@
 'use client';
 
 import AOS from "aos";
-import { LogIn, Menu, X } from "lucide-react";
+import { LogIn, Menu } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Profile from "./profile";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 function Header() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const loading = status === "loading";
   const role = session?.user?.role;
@@ -31,7 +31,8 @@ function Header() {
   const adminLinks = [
     { title: "Registration", link: "/admin" },
     { title: "Manage Users", link: "/admin/users" },
-    { title: "Manage Prices", link: "/admin/prices" },
+    { title: "Manage Reference", link: "/admin/reference" },
+    { title: "Manage Categories", link: "/admin/categories" },
   ];
 
   const userLinks = {
@@ -39,6 +40,10 @@ function Header() {
       { title: "Registration", link: "/registration" },
       { title: "Profile", link: "/profile" },
     ],
+    KABAG : [
+      { title: "Registration", link: "/registration" },
+      { title: "Profile", link: "/profile" },
+    ]
   };
 
   const renderNavLinks = (role: string | undefined) => {
@@ -64,24 +69,7 @@ function Header() {
       </ul>
     );
   };
-
-  const renderMobileLinks = (role: string | undefined) => {
-    const links = role === "admin" ? adminLinks : userLinks[role as keyof typeof userLinks];
-    if (!links) return null;
-
-    return links.map((item) => (
-      <li key={item.link}>
-        <Link
-          href={item.link}
-          className="text-[#1B3A1A] text-lg"
-          onClick={() => setIsOpen(false)}
-        >
-          {item.title}
-        </Link>
-      </li>
-    ));
-  };
-
+  
   if (loading) return null;
 
   return (
@@ -126,39 +114,55 @@ function Header() {
         </div>
 
         {/* Mobile Burger */}
-        <button
-          className="md:hidden text-inherit"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
-
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white text-[#1B3A1A] shadow-md flex flex-col items-center gap-4 py-6 z-50 md:hidden">
-          <ul>{renderMobileLinks(role)}</ul>
-          <div className="flex flex-col gap-4 pt-4">
-            {session ? (
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="py-2 px-6 rounded-md border border-[#1B3A1A] text-[#1B3A1A] hover:bg-[#1B3A1A]/10"
-              >
-                Sign Out
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-white">
+                <Menu className="w-6 h-6" />
               </button>
-            ) : (
-              <>
-                <Link
-                  href={"/login"}
-                  className="py-2 px-6 rounded-md border bg-[#1B3A1A] text-white border-[#1B3A1A]"
-                >
-                  Login
-                </Link>
-              </>
-            )}
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="bg-[#263c7d] text-white border-none rounded-md shadow-lg w-56"
+            >
+              <DropdownMenuLabel className="text-white">Menu</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-white/20" />
+              {(role === "admin" ? adminLinks : userLinks[role as keyof typeof userLinks])?.map(
+                (item) => (
+                  <DropdownMenuItem key={item.link} asChild>
+                    <Link
+                      href={item.link}
+                      className="w-full hover:bg-white/10 rounded px-2 py-1"
+                    >
+                      {item.title}
+                    </Link>
+                  </DropdownMenuItem>
+                )
+              )}
+              <DropdownMenuSeparator className="bg-white/20" />
+              {session ? (
+                <DropdownMenuItem asChild>
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="w-full text-left hover:bg-white/10 px-2 py-1"
+                  >
+                    Sign Out
+                  </button>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/login"
+                    className="w-full hover:bg-white/10 px-2 py-1"
+                  >
+                    Login
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      )}
+      </div>
     </header>
   );
 }

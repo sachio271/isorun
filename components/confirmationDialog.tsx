@@ -28,7 +28,7 @@ export function ConfirmationDialog(
         </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-            <Button onClick={() =>  {handleConfirm(status); onClose();}}>Confirm</Button>
+            <Button className="bg-[#263c7d] hover: cursor-pointer" onClick={() =>  {handleConfirm(status); onClose();}}>Confirm</Button>
         </DialogFooter>
     </DialogContent>
     </Dialog>

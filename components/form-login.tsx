@@ -76,7 +76,7 @@ const FormLogin = () => {
                         type="text"
                         name="username"
                         className="bg-white/30 text-white placeholder:text-white"
-                        placeholder="johnDoe"
+                        placeholder="username"
                         required
                     />
                     {errors.username && (
@@ -91,7 +91,7 @@ const FormLogin = () => {
                         id="password" 
                         type="password" 
                         name="password" 
-                        placeholder="********"
+                        placeholder="password"
                         required 
                         className="bg-white/30 text-white placeholder:text-white"/>
                     {errors.password && (

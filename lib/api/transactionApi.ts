@@ -64,3 +64,12 @@ export const uploadTransactionImage = async (data: FormData, token: string, id: 
     });
     return response.data;
 }
+
+export const deleteTransaction = async (token: string, id: string) => {
+    const response = await axiosInstance.delete(`/transaction/${id}`, {
+      headers: {
+        "Authorization": `bearer ${token}`,
+      },
+    });
+    return response.data;
+}

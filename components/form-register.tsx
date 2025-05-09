@@ -108,14 +108,17 @@ const FormRegister = () => {
                         )}
                     </div>
                     <div className="grid gap-2">
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-between">
                             <Label htmlFor="password">Password</Label>
+                            <span className="text-xs text-white/70">
+                            * min 8 chars, 1 uppercase, 1 lowercase, 1 number
+                            </span>
                         </div>
                         <Input 
                             id="password" 
                             type="password" 
                             name="password" 
-                            placeholder="********"
+                            placeholder="password"
                             className="bg-white/30 text-white placeholder:text-white" 
                             required />
                         {errors.password && (

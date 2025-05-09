@@ -14,6 +14,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const metadata = {
+  title: 'Isoplus Run',
+  description: 'Your app description',
+  icons: {
+    icon: '/logo.png', // Favicon
+    shortcut: '/logo.png',
+    apple: '/logo.png', // iOS homescreen
+  },
+  openGraph: {
+    title: 'Isoplus Run',
+    description: 'Isoplus Run Registration',
+    images: [
+      {
+        url: '/logo.png', // OG Image
+        width: 1200,
+        height: 630,
+        alt: 'Your App Logo',
+      },
+    ],
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

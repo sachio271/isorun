@@ -23,6 +23,10 @@ export interface MasterCategory {
     city: string;
     bloodType: string;
     size: string;
+    price: string;
+    province: string;
+    gender: string;
+    condition: string;
     master_categoryId: number;
     transactionsId: string;
     createdAt: string; // ISO 8601 Date string

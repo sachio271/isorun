@@ -2,16 +2,16 @@
 
 import { showToast } from "@/components/toast-notification";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTransaction } from "@/lib/api/transactionApi";
-import { Transaction } from "@/types/response/transactionResponse";
+import { getAllUser } from "@/lib/api/userApi";
+import { UserResponse } from "@/types/response/userResponse";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { columns } from "./column";
-import { DataTable } from "./data-table";
+import { columns } from "./data-table/column";
+import { DataTable } from "./data-table/data-table";
 
-export default function Home() {
+export default function Users() {
     const {data: session} = useSession()
-    const [dataTransaction, setDataTransaction] = useState<Transaction[]>([])
+    const [dataUsers, setDataUsers] = useState<UserResponse[]>([])
     useEffect(() => {
         fetchDataTransaction()
     }, [session])
@@ -20,8 +20,8 @@ export default function Home() {
         if(!session?.accessToken) return
 
         try {
-            const trx = await getTransaction(session.accessToken)
-            setDataTransaction(trx)
+            const trx = await getAllUser(session.accessToken)
+            setDataUsers(trx)
             console.log(trx)   
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -35,11 +35,11 @@ export default function Home() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Transactions Data</CardTitle>
+                <CardTitle>Users Data</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-                <DataTable columns={columns} data={dataTransaction} />
+                <DataTable columns={columns} data={dataUsers} />
             </CardContent>
         </Card>
-  );
+    );
 }

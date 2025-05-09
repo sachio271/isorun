@@ -17,5 +17,8 @@ export type Participant = {
     categoryId: number;
     categoryName: string;
     categoryPrice: number;
+    province: string;
+    gender: string;
+    condition: string;
 };
   
