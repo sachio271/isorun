@@ -7,7 +7,6 @@ export const LoginSchema = object({
 
 export const RegisterSchema = object({
     ektp: string(),
-    username: string(),
     name: string(),
     password: 
     string()

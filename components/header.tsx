@@ -87,8 +87,8 @@ function Header() {
           <Image
             src="/logo.png"
             alt="logo"
-            width={scrolled ? 36 : 48}
-            height={scrolled ? 36 : 48}
+            width={scrolled ? 78 : 82}
+            height={scrolled ? 78 : 82}
             className="transition-all duration-300"
           />
         </Link>

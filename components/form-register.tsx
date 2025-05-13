@@ -80,20 +80,6 @@ const FormRegister = () => {
                         )}
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="username">Username</Label>
-                        <Input
-                            id="username"
-                            type="text"
-                            name="username"
-                            placeholder="johnDoe"
-                            className="bg-white/30 text-white placeholder:text-white"
-                            required
-                        />
-                        {errors.username && (
-                            <div className="text-red-500 text-sm mt-2">{errors.username[0]}</div>
-                        )}
-                    </div>
-                    <div className="grid gap-2">
                         <Label htmlFor="name">Name</Label>
                         <Input
                             id="name"

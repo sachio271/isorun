@@ -333,7 +333,7 @@ export default function RegistrationPage() {
           <TabsContent value="register">
             <Card>
               <CardHeader>
-                <CardTitle>Step 1: Fill General and Personal Data</CardTitle>
+                <CardTitle>Step 1: Isikan semua field yang diperlukan</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
                 {/* General Data */}
@@ -363,9 +363,9 @@ export default function RegistrationPage() {
                 <Table className="mt-4">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Participant</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Price</TableHead>
+                      <TableHead>Partisipan</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Harga</TableHead>
                       <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -406,12 +406,13 @@ export default function RegistrationPage() {
           <TabsContent value="confirmation">
             <Card>
               <CardHeader>
-                <CardTitle>Step 2: Wait for Admin Confirmation</CardTitle>
+                <CardTitle>Step 2: Menunggu Konfirmasi Admin</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700">
-                  Your registration data is being verified by our admin. Please
-                  check back later or wait for a confirmation email.
+                  Data registrasi Anda sedang diperiksa oleh admin. Silakan
+                  tunggu konfirmasi dari admin. Jika ada pertanyaan, silakan
+                  hubungi admin.
                 </p>
               </CardContent>
             </Card>
@@ -420,16 +421,16 @@ export default function RegistrationPage() {
           <TabsContent value="invoice">
             <Card>
               <CardHeader>
-                <CardTitle>Step 3: Payment</CardTitle>
+                <CardTitle>Step 3: Pembayaran</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                <p>Details : </p>
+                <p>Detail : </p>
                 <Table className="">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Participant</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Price</TableHead>
+                      <TableHead>Partisipan</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Harga</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -449,8 +450,8 @@ export default function RegistrationPage() {
                   </TableBody>
                 </Table>
                 <p>
-                  Please transfer <strong>Rp {transaction?.total?.toLocaleString()}</strong> to
-                  the following bank account:
+                  Silahkan transfer sejumlah <strong>Rp {transaction?.total?.toLocaleString()}</strong> ke
+                  akun bank berikut:
                 </p>
                 <ul className="text-sm text-gray-800 list-disc pl-4">
                   <li>Bank: BCA</li>
@@ -459,17 +460,17 @@ export default function RegistrationPage() {
                 </ul>
 
                 <p className="mt-4 text-red-700">
-                 * After transferring, please upload the transfer proof below as an IMAGE.
-                  Make sure to include your transaction ID in the proof.
+                 * Setelah melakukan transfer, silahkan upload bukti transfer di bawah sebagai GAMBAR (tidak menerima PDF),
+                  Pastikan anda mengupload bukti transfer yang benar dan jelas agar admin dapat memverifikasi pembayaran Anda dengan cepat.
                 </p>
 
 
                 <div className="grid gap-2">
-                  <Label htmlFor="proof">Upload Transfer Proof</Label>
+                  <Label htmlFor="proof">Upload Bukti Transfer</Label>
                   <Input id="proof" type="file" accept="image/*" onChange={handleFileChange} />
                 </div>
 
-                <Button onClick={handleUpload} className="bg-[#263c7d] hover:cursor-pointer">Submit Proof</Button>
+                <Button onClick={handleUpload} className="bg-[#263c7d] hover:cursor-pointer">Submit</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -477,12 +478,13 @@ export default function RegistrationPage() {
           <TabsContent value="payment">
             <Card>
               <CardHeader>
-                <CardTitle>Step 4: Wait for Payment Confirmation</CardTitle>
+                <CardTitle>Step 4: Menunggu Konfirmasi Pembayaran</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700">
-                  Your payment is being verified by our admin. Please
-                  check back later.
+                  Bukti transfer Anda sedang diperiksa oleh admin. Silakan
+                  tunggu konfirmasi dari admin. Jika ada pertanyaan, silakan
+                  hubungi admin.
                 </p>
               </CardContent>
             </Card>
@@ -491,10 +493,10 @@ export default function RegistrationPage() {
           <TabsContent value="recap">
             <Card>
               <CardHeader>
-                <CardTitle>Step 5: Registration Recap</CardTitle>
+                <CardTitle>Step 5: Rekap Registrasi</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">Please show this information to admin on the event day:</p>
+                <p className="mb-4">Silahkan tunjukan kepada pihak administrasi di hari H acara:</p>
                 <div className="grid grid-cols-3 gap-2">
                   <span className="font-medium text-gray-600">ID:</span>
                   <span className="col-span-2">{transaction?.id}</span>
@@ -510,7 +512,7 @@ export default function RegistrationPage() {
                     {transaction?.emergencyName} ({transaction?.emergencyPhone})
                   </span>
 
-                  <span className="font-medium text-gray-600">Total Paid:</span>
+                  <span className="font-medium text-gray-600">Total Dibayar:</span>
                   <span className="col-span-2">Rp {transaction?.total?.toLocaleString("id-ID")}</span>
                 </div>
                 <div className="overflow-x-auto mt-4">

@@ -288,7 +288,7 @@ export default function AddParticipantDialog({
             </SelectContent>
           </Select>
             {free <= 0 ? (
-              <div className="text-red-500 text-sm mt-2">No free slot available</div>
+              <div className="text-red-500 text-sm mt-2">Tidak ada slot gratis yang tersedia</div>
             ) : (
               <div className="flex items-center space-x-2 mt-2">
                 <Checkbox 
@@ -305,13 +305,20 @@ export default function AddParticipantDialog({
                   htmlFor="terms"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Klaim Free On This User
+                  Klaim slot gratis pada user ini
                 </label>
               </div>
           )}
         </div>
         <div className="mb-2">
-          <Label className="mb-2">Category</Label>
+          <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="category">
+                Categori
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+          </div>
           <Select
             value={form.categoryName || ""}
             required
@@ -345,15 +352,25 @@ export default function AddParticipantDialog({
             <Input id="lname" disabled required placeholder="Nama Belakang" value={form.lname} onChange={(e) => setForm({ ...form, lname: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="bibname">
-              Bib Name
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="bibname">
+                Bib Name (nama di jersey)
+              </Label>
+              <span className="text-xs text-red-700">
+              * required (max 8 char)
+              </span>
+            </div>
             <Input id="bibname" required placeholder="Nama Bib" maxLength={8} value={form.bibname} onChange={(e) => setForm({ ...form, bibname: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="bloodType">
-              Jersey Size
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="size">
+                Size Jersey
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Select
               value={form.size}
               required
@@ -372,33 +389,58 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="email">
-              Email
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="email">
+                Email
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="email" type="email" required placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="identityId">
-              Identity ID
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="identityId">
+                Nomor EKTP
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="identityId" required placeholder="Identity ID" value={form.identityId} onChange={(e) => setForm({ ...form, identityId: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="birthplace">
-              Birthplace
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="birthplace">
+                Tempat Lahir
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="birthplace" required placeholder="Tempat Lahir" value={form.birthplace} onChange={(e) => setForm({ ...form, birthplace: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="birthdate">
-              Birthdate
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="birthdate">
+                Tanggal Lahir
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="birthdate" required type="date" placeholder="Tanggal Lahir" value={form.birthdate} onChange={(e) => setForm({ ...form, birthdate: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="gender">
-              Gender
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="gender">
+                Jenis Kelamin
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Select
               value={form.gender}
               required
@@ -417,45 +459,80 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="phone">
-              Phone
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="phone">
+                Nomor Telepon
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="phone" required placeholder="No. Telepon" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="address">
-              Address
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="address">
+                Alamat
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="address" required placeholder="Alamat" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="zipcode">
-              Zipcode
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="zipcode">
+                Kode Pos
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="zipcode" required placeholder="Kode Pos" value={form.zipcode} onChange={(e) => setForm({ ...form, zipcode: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="country">
-              Country
-            </Label>
-            <Input id="country" required placeholder="Negara" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} />
-        </div>
-        <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="province">
-              Province
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="province">
+                Provinsi
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="province" required placeholder="Provinsi" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="city">
-              City
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="city">
+                Kota
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="city" required placeholder="Kota" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="bloodType">
-              Blood Type
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="country">
+                Negara
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
+            <Input id="country" required placeholder="Negara" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} />
+        </div>
+        <div className="mb-2">
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="bloodType">
+                Golongan Darah
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Select
               value={form.bloodType}
               required
@@ -474,9 +551,14 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="condition">
-              Condition
-            </Label>
+            <div className="flex items-center justify-between">
+              <Label className="capitalize mb-2" htmlFor="condition">
+                Kondisi
+              </Label>
+              <span className="text-xs text-red-700">
+              * required
+              </span>
+            </div>
             <Input id="condition" placeholder="Kondisi" value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} />
             <div className="text-sm text-gray-600">contoh: jantung, gangguan pernafasan, hamil</div>
         </div>

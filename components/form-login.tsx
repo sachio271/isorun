@@ -63,20 +63,20 @@ const FormLogin = () => {
         <CardHeader>
             <CardTitle className="text-2xl text-white">Login</CardTitle>
             <CardDescription className="text-sm text-blue-300">
-                Enter your username below to login to your account
+                Masukan EKTP dan Password untuk login
             </CardDescription>
         </CardHeader>
         <CardContent>
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                    <Label htmlFor="username" className="text-white">Username</Label>
+                    <Label htmlFor="EKTP" className="text-white">EKTP</Label>
                     <Input
                         id="username"
                         type="text"
                         name="username"
                         className="bg-white/30 text-white placeholder:text-white"
-                        placeholder="username"
+                        placeholder="NIK EKTP"
                         required
                     />
                     {errors.username && (
@@ -91,7 +91,7 @@ const FormLogin = () => {
                         id="password" 
                         type="password" 
                         name="password" 
-                        placeholder="password"
+                        placeholder="Password"
                         required 
                         className="bg-white/30 text-white placeholder:text-white"/>
                     {errors.password && (
@@ -103,9 +103,9 @@ const FormLogin = () => {
                 </Button>
                 </div>
                 <div className="mt-4 text-center text-sm text-white">
-                    Don&apos;t have an account?{" "}
+                    Belum punya akun?{" "}
                     <a href="/register" className="underline underline-offset-4">
-                        Sign up
+                        Register
                     </a>
                 </div>
             </form>

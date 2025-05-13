@@ -16,21 +16,21 @@ export default function Home() {
           className="opacity-90"
         />
         <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center">
-          <h1 className="text-4xl font-bold">Welcome to ISOPLUS</h1>
+          <h1 className="text-4xl font-bold">Welcome to ISOPLUS Run</h1>
           <p className="mt-2 text-lg">Website pendaftaran internal karyawan wings surya</p>
         </div>
       </section>
 
       <section className="py-16 px-4 md:px-10" id="how-to-register">
-        <h2 className="text-3xl font-bold text-center mb-10">How to Register</h2>
+        <h2 className="text-3xl font-bold text-center mb-10">Cara Mendaftar</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { icon: UserPlus, title: "Step 1", desc: "Open registration menu" },
-            { icon: ClipboardList, title: "Step 2", desc: "Input all required fields" },
-            { icon: BookUser, title: "Step 3", desc: "Wait admin to confirm your data" },
-            { icon: BadgeCheck, title: "Step 4", desc: "Proceed to payment" },
-            { icon: CreditCard, title: "Step 5", desc: "Wait admin to confirm your payment" },
-            { icon: "✅", title: "Step 6", desc: "Done! You're registered." },
+            { icon: UserPlus, title: "Step 1", desc: "Buka menu REGISTRASI" },
+            { icon: ClipboardList, title: "Step 2", desc: "Isi form dan submit untuk menyimpan data" },
+            { icon: BookUser, title: "Step 3", desc: "Tunggu admin melakukan konfirmasi data" },
+            { icon: BadgeCheck, title: "Step 4", desc: "Lanjutkan ke proses pembayaran" },
+            { icon: CreditCard, title: "Step 5", desc: "Tunggu admin melakukan konfirmasi pembayaran" },
+            { icon: "✅", title: "Step 6", desc: "Selesai! anda sudah terdaftar." },
           ].map((step, index) => (
             <Card key={index} data-aos="zoom-in" data-aos-delay={index * 100}>
               <CardHeader>
