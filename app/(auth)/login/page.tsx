@@ -5,7 +5,7 @@ const Login = () => {
   return (
     <div>
         <Image
-          src={'/Logo.png'}
+          src="/Logo.png"
           alt="App Logo"
           width={280}
           height={280}
