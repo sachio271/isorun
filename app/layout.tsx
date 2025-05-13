@@ -15,19 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://isoplusrun.wingssurya.com'),
   title: 'Isoplus Run',
   description: 'Your app description',
   icons: {
-    icon: '/logo.png', // Favicon
-    shortcut: '/logo.png',
-    apple: '/logo.png', // iOS homescreen
+    icon: '/isoplus.png', // Favicon
+    shortcut: '/isoplus.png',
+    apple: '/isoplus.png', // iOS homescreen
   },
   openGraph: {
     title: 'Isoplus Run',
     description: 'Isoplus Run Registration',
     images: [
       {
-        url: '/logo.png', // OG Image
+        url: '/isoplus.png', // OG Image
         width: 1200,
         height: 630,
         alt: 'Your App Logo',
