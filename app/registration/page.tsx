@@ -24,7 +24,7 @@ import {
 import { createParticipant, createTransaction, getTransactionByUser, uploadTransactionImage } from "@/lib/api/transactionApi";
 import { Participant } from "@/types/helper/participant";
 import { Transaction } from "@/types/response/transactionResponse";
-import { Trash } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -38,6 +38,10 @@ export default function RegistrationPage() {
   const [transaction, setTransaction] = useState<Transaction>();
   const [image, setImage] = useState<File | null>(null);
   const [isDialogConfirmOpen, setDialogConfirmOpen] = useState(false);
+  const [isDialogConfirmUploadOpen, setDialogConfirmUploadOpen] = useState(false);
+  const handleCancelUpload = () => {
+    setDialogConfirmUploadOpen(false);
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -92,6 +96,9 @@ export default function RegistrationPage() {
     }
     console.log("kabag free", kabagFree); 
   }, [session]);
+
+  
+  const [loading, setLoading] = useState(false);
 
   const handleAddParticipant = (formData: FormData) => {
     const isFreeUsed = formData.get("categoryPrice") === "0";
@@ -219,8 +226,7 @@ export default function RegistrationPage() {
       console.error("No access token");
       return;
     }
-
-    console.log("Uploading image:", image);
+    setLoading(true);
 
     if (!image) {
       showToast({
@@ -268,6 +274,7 @@ export default function RegistrationPage() {
             type: "error",
         });
     }
+    setLoading(false);
   };
 
   const handleDeleteParticipant = (index: number) => {
@@ -293,6 +300,14 @@ export default function RegistrationPage() {
         status={""} 
         isOpen={isDialogConfirmOpen} 
         onClose={handleCancel}
+      />
+      <ConfirmationDialog
+        title="Action Confirmation" 
+        description="Apakah anda yakin ingin mengupload bukti transfer?" 
+        handleConfirm={handleUpload} 
+        status={""} 
+        isOpen={isDialogConfirmUploadOpen} 
+        onClose={handleCancelUpload}
       />
       <AddParticipantDialog
         open={dialogOpen}
@@ -470,7 +485,9 @@ export default function RegistrationPage() {
                   <Input id="proof" type="file" accept="image/*" onChange={handleFileChange} />
                 </div>
 
-                <Button onClick={handleUpload} className="bg-[#263c7d] hover:cursor-pointer">Submit</Button>
+                <Button onClick={() => setDialogConfirmUploadOpen(true)} className="bg-[#263c7d] hover:cursor-pointer" disabled={loading}>
+                  {loading ? <Loader2 className="animate-spin"/> : "Submit"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
