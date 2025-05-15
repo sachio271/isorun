@@ -20,7 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -31,13 +32,45 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-    
-    const [globalFilter, setGlobalFilter] = useState("");
+    const searchParams = useSearchParams()
+    const router = useRouter()
+
+    const initialGlobalFilter = searchParams.get("search") ?? ""
+    const initialStatus = searchParams.get("status") ?? undefined
+    const initialPageIndex = parseInt(searchParams.get("page") ?? "0")
+
+    const [globalFilter, setGlobalFilter] = useState(initialGlobalFilter)
+    const [statusFilter, setStatusFilter] = useState(initialStatus)
+    const [pageIndex, setPageIndex] = useState(initialPageIndex)
+
+    useEffect(() => {
+      const query = new URLSearchParams()
+      if (globalFilter) query.set("search", globalFilter)
+      if (statusFilter) query.set("status", statusFilter)
+      if (pageIndex !== 0) query.set("page", String(pageIndex))
+
+      router.replace(`?${query.toString()}`)
+    }, [globalFilter, statusFilter, pageIndex])
+
     const table = useReactTable({
         data,
         columns,
         state: {
-            globalFilter
+          globalFilter,
+          pagination: {
+            pageIndex,
+            pageSize: 10,
+          },
+          columnFilters: statusFilter
+            ? [{ id: "status", value: Number(statusFilter) }]
+            : [],
+        },
+        onPaginationChange: (updater) => {
+          const newPageIndex =
+            typeof updater === "function"
+              ? updater({ pageIndex, pageSize: 10 }).pageIndex
+              : updater.pageIndex
+          setPageIndex(newPageIndex)
         },
         onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
@@ -56,15 +89,11 @@ export function DataTable<TData, TValue>({
           />
 
           <Select
-            value={
-              table.getColumn("status")?.getFilterValue() !== undefined
-                ? String(table.getColumn("status")?.getFilterValue())
-                : "all"
-            }
+            value={statusFilter ?? "all"}
             onValueChange={(value) => {
-              table.getColumn("status")?.setFilterValue(
-                value === "all" ? undefined : Number(value)
-              );
+              const newValue = value === "all" ? undefined : value
+              setStatusFilter(newValue)
+              setPageIndex(0)
             }}
           >
             <SelectTrigger className="w-[220px]">
@@ -79,7 +108,6 @@ export function DataTable<TData, TValue>({
               <SelectItem value="-1">Data Ditolak</SelectItem>
             </SelectContent>
           </Select>
-
         </div>
         <div className="rounded-md border mt-2">
         <Table>

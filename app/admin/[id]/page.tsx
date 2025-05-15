@@ -206,7 +206,7 @@ const TransactionDetails = () => {
               {transaction?.transferProof !== '-' ? (
                 <a href={transaction?.transferProof || "#"} target="_blank" rel="noopener noreferrer">
                   <Image
-                    src={transaction?.transferProof || "user.png"}
+                    src={transaction?.transferProof || "/user.png"}
                     alt="Transfer Proof"
                     width={500}
                     height={300}
