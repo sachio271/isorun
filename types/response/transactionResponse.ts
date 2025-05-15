@@ -60,3 +60,32 @@ export interface MasterCategory {
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string
   }
+
+  export interface EnrichParticipant {
+    id: number;
+    fname: string;
+    lname: string;
+    bibname: string;
+    email: string;
+    identityId: string;
+    birthplace: string;
+    birthdate: string; // ISO 8601 DateTime string
+    phone: string;
+    address: string;
+    zipcode: string;
+    country: string;
+    city: string;
+    bloodType: string;
+    size: string;
+    price: string;
+    province: string;
+    gender: string;
+    condition: string;
+    master_categoryId: number;
+    transactionsId: string;
+    pt: string;
+    divisi: string;
+    createdAt: string; // ISO 8601 Date string
+    updatedAt: string; // ISO 8601 Date string
+    master_category: MasterCategory;
+  }

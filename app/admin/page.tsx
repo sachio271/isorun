@@ -1,10 +1,11 @@
 'use client';
 
+import { ParticipantDetail } from "@/components/detailParticipantDialog";
 import { showToast } from "@/components/toast-notification";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTransaction } from "@/lib/api/transactionApi";
-import { Transaction } from "@/types/response/transactionResponse";
+import { EnrichParticipant, Transaction } from "@/types/response/transactionResponse";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { columns } from "./column";
@@ -13,11 +14,29 @@ import { DataTable } from "./data-table";
 export default function Home() {
     const {data: session} = useSession()
     const [dataTransaction, setDataTransaction] = useState<Transaction[]>([])
-    const [total, setTotal] = useState<{ trans: number; participant: number; total: Record<string, number> }>({
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [status, setStatus] = useState<EnrichParticipant[]>([]);
+    const handleCancel = () => {
+        setIsDialogOpen(false);
+        setStatus([]);
+    };
+    const handleOpen = (status: EnrichParticipant[]) => {
+        setIsDialogOpen(true);
+        setStatus(status);
+    };
+    const [total, setTotal] = useState<{
+        trans: number;
+        participant: number;
+        categories: Record<string, {
+            count: number;
+            participants: EnrichParticipant[];
+        }>;
+        }>({
         trans: 0,
         participant: 0,
-        total: {},
+        categories: {},
     });
+
     useEffect(() => {
         fetchDataTransaction()
     }, [session])
@@ -31,7 +50,7 @@ export default function Home() {
             setTotal({ 
                 trans: trx.total_transaction, 
                 participant: trx.total_participant, 
-                total: trx.total 
+                categories: trx.categories,
             });
             console.log(trx)   
         } catch (error) {
@@ -44,6 +63,12 @@ export default function Home() {
         }
     }
     return (
+        <>
+        <ParticipantDetail 
+          users={status} 
+          isOpen={isDialogOpen} 
+          onClose={handleCancel}
+        />
         <Card>
             <CardHeader>
                 <CardTitle>
@@ -60,9 +85,9 @@ export default function Home() {
 
                                     <div>
                                         <span className="text-black font-bold">Category total:</span>
-                                        {Object.entries(total.total || {}).map(([category, count]) => (
-                                            <div key={category} className="grid grid-cols-3 gap-2">
-                                                <span className="font-medium text-gray-600">{category}:</span>
+                                        {Object.entries(total.categories).map(([categoryName, { count, participants }]) => (
+                                            <div key={categoryName} className="grid grid-cols-3 gap-2">
+                                                <span className="font-medium text-gray-600 hover: cursor-pointer" onClick={() => handleOpen(participants)}>{categoryName}:</span>
                                                 <span className="col-span-2">{count}</span>
                                             </div>
                                         ))}
@@ -79,5 +104,6 @@ export default function Home() {
                 </div>
             </CardContent>
         </Card>
+        </>
   );
 }
