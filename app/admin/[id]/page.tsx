@@ -122,33 +122,44 @@ const TransactionDetails = () => {
           <CardHeader>
             <CardTitle className="text-lg text-blue-700">Transaction Status</CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-between">
+          <CardContent className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
             <span className="text-sm font-medium">
-            {transaction?.status === 1
-              ? "✅ Waiting Data Confirmation"
-              : transaction?.status === 2
-              ? "⏳ Waiting Transfer"
-              : transaction?.status === 3
-              ? "✅ Waiting Payment Confirmation"
-              : transaction?.status === 4
-              ? "✅ Payment Confirmed"
-              : transaction?.status === -1
-              ? "❌ Data Rejected"
-              : "⏳ Pending"}
+              {transaction?.status === 1
+                ? "✅ Waiting Data Confirmation"
+                : transaction?.status === 2
+                ? "⏳ Waiting Transfer"
+                : transaction?.status === 3
+                ? "✅ Waiting Payment Confirmation"
+                : transaction?.status === 4
+                ? "✅ Payment Confirmed"
+                : transaction?.status === -1
+                ? "❌ Data Rejected"
+                : "⏳ Pending"}
             </span>
+
             {(transaction?.status === 1) && (
-                <div className="flex gap-2">
-                  <Button className="hover: cursor-pointer bg-red-800" onClick={() => handleActionClick("-1")}>{"Reject Data"}</Button>
-                  <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{"Confirm Data"}</Button>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button className="bg-red-800 hover:cursor-pointer" onClick={() => handleActionClick("-1")}>
+                  Reject Data
+                </Button>
+                <Button className="hover:cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>
+                  Confirm Data
+                </Button>
+              </div>
             )}
+
             {(transaction?.status === 3) && (
-              <div className="flex gap-2">
-                <Button className="hover: cursor-pointer bg-amber-600" onClick={() => handleActionClick("-2")}>{"Reupload"}</Button>
-                <Button className="hover: cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>{"Confirm Payment"}</Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button className="bg-amber-600 hover:cursor-pointer" onClick={() => handleActionClick("-2")}>
+                  Reupload
+                </Button>
+                <Button className="hover:cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>
+                  Confirm Payment
+                </Button>
               </div>
             )}
           </CardContent>
+
         </Card>
 
         {/* Info + Transfer Proof */}
@@ -220,6 +231,7 @@ const TransactionDetails = () => {
                   <TableHead>First Name</TableHead>
                   <TableHead>Last Name</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Size</TableHead>
                   <TableHead>Price</TableHead>
@@ -232,6 +244,7 @@ const TransactionDetails = () => {
                     <TableCell>{p.fname}</TableCell>
                     <TableCell>{p.lname}</TableCell>
                     <TableCell>{p.email}</TableCell>
+                    <TableCell>{p.phone}</TableCell>
                     <TableCell>{p.master_category?.name}</TableCell>
                     <TableCell>{p.size}</TableCell>
                     <TableCell>Rp {p.price.toLocaleString()}</TableCell>

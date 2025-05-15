@@ -76,7 +76,7 @@ function Header() {
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out px-6 md:px-10 py-4 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-md text-[#1B3A1A]"
+          ? "bg-white/20 backdrop-blur-md shadow-md text-[#1B3A1A]"
           : "bg-transparent text-white"
       }`}
       data-aos="fade-down"
@@ -117,8 +117,8 @@ function Header() {
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="text-white">
-                <Menu className="w-6 h-6" />
+              <button className="text-[#263c7d]">
+                <Menu className="w-6 h-6"  />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

@@ -87,8 +87,10 @@ export default function Users() {
                         </div>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-4">
-                    <DataTable columns={columns(handleEdit)} data={dataUsers} />
+                <CardContent className="w-full overflow-x-auto px-2 sm:px-4 md:px-6">
+                    <div className="w-full overflow-x-auto">
+                        <DataTable columns={columns(handleEdit)} data={dataUsers} />
+                    </div>
                 </CardContent>
             </Card>
         </>
