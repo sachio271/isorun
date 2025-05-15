@@ -7,12 +7,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Settings } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import ChangePasswordDialog from "./changePasswordDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function Profile() {
   const session = useSession();
+  const [isOpen, setIsOpen] = useState(false);
+  const handleClose = () => setIsOpen(false);
   return (
+    <>
+    <ChangePasswordDialog
+      open={isOpen}
+      onClose={handleClose}
+    />
     <DropdownMenu>
       <div className="flex items-center gap-4">
         <DropdownMenuTrigger asChild className="cursor-pointer">
@@ -34,10 +44,13 @@ function Profile() {
 
         <DropdownMenuSeparator />
 
-        {/* <DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => setIsOpen(true)}
+        >
           <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem> */}
+          <span>Change Password</span>
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => signOut({ callbackUrl: "/login" })}
@@ -46,6 +59,7 @@ function Profile() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   );
 }
 

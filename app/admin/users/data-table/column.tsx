@@ -2,8 +2,7 @@
 
 import { UserResponse } from "@/types/response/userResponse"
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
-import Link from "next/link"
+import { CellAction } from "./cell-action"
 
 
 export const columns: ColumnDef<UserResponse>[] = [
@@ -42,8 +41,6 @@ export const columns: ColumnDef<UserResponse>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => 
-      <Link href={`/admin/users/${row.original.id}`}>
-        <MoreHorizontal className="h-4 w-4" />
-      </Link>
+      <CellAction user={row.original} />
   },
 ]

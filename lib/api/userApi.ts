@@ -63,3 +63,21 @@ export const createFamilyRef = async (token: string, formData: FormData): Promis
   });
   return response.data;
 }
+
+export const changePassword = async (token: string, formData: FormData): Promise<string> => {
+  const response = await axiosInstance.put<string>(`/auth/change-password`, formData, {
+    headers: {
+      Authorization: `bearer ${token}`,
+    },
+  });
+  return response.data;
+}
+
+export const resetPassword = async (token: string, id: string): Promise<string> => {
+  const response = await axiosInstance.patch<string>(`/auth/reset-password/${id}`, {}, {
+    headers: {
+      Authorization: `bearer ${token}`,
+    },
+  });
+  return response.data;
+}
