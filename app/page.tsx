@@ -16,7 +16,7 @@ export default function Home() {
           className="opacity-90"
         />
         <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center">
-          <h1 className="text-4xl font-bold">Welcome to ISOPLUS Run</h1>
+          <h1 className="text-4xl font-bold">Welcome to Surabaya Isoplus Marathon 2025</h1>
           <p className="mt-2 text-lg">Website pendaftaran internal karyawan wings surya</p>
         </div>
       </section>

@@ -454,9 +454,9 @@ export default function RegistrationPage() {
                   akun bank berikut:
                 </p>
                 <ul className="text-sm text-gray-800 list-disc pl-4">
-                  <li>Bank: BCA</li>
-                  <li>Account Number: 1234567890</li>
-                  <li>Account Name: ISPlus Run</li>
+                  <li>Bank: BRI</li>
+                  <li>Account Number: 115601000191306</li>
+                  <li>Account Name: PT. WINGS SURYA</li>
                 </ul>
 
                 <p className="mt-4 text-red-700">
