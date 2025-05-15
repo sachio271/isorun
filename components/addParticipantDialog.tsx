@@ -199,12 +199,9 @@ export default function AddParticipantDialog({
       });
       return;
     }
-    let price = "0";
+    let price = form.categoryPrice;
     if (isFreeClaimChecked) {
       price = "0";
-    }
-    else{
-      price = form.categoryPrice;
     }
     const formData = new FormData();
     formData.append("fullName", form.fullName);
@@ -254,6 +251,7 @@ export default function AddParticipantDialog({
       condition: "",
     });
     setSelectedUserIndex("0");
+    setManualFreeClaimChecked(false);
     onClose();
   };
   

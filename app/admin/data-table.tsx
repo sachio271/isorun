@@ -11,6 +11,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -46,13 +47,39 @@ export function DataTable<TData, TValue>({
 
     return (
     <>
-        <div>
-            <Input
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+          <Input
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
-            className="p-2 font-lg shadow border border-block"
+            className="p-2 font-lg shadow border"
             placeholder="Search all columns..."
-            />
+          />
+
+          <Select
+            value={
+              table.getColumn("status")?.getFilterValue() !== undefined
+                ? String(table.getColumn("status")?.getFilterValue())
+                : "all"
+            }
+            onValueChange={(value) => {
+              table.getColumn("status")?.setFilterValue(
+                value === "all" ? undefined : Number(value)
+              );
+            }}
+          >
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Filter Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="1">Menunggu Konfirmasi Data</SelectItem>
+              <SelectItem value="2">Menunggu Pembayaran</SelectItem>
+              <SelectItem value="3">Menunggu Konfirmasi Pembayaran</SelectItem>
+              <SelectItem value="4">Pembayaran Diterima</SelectItem>
+              <SelectItem value="-1">Data Ditolak</SelectItem>
+            </SelectContent>
+          </Select>
+
         </div>
         <div className="rounded-md border mt-2">
         <Table>
