@@ -204,13 +204,15 @@ const TransactionDetails = () => {
             </CardHeader>
             <CardContent>
               {transaction?.transferProof !== '-' ? (
-                <Image
-                  src={transaction?.transferProof || "/user.png"}
-                  alt="Transfer Proof"
-                  width={500}
-                  height={300}
-                  className="rounded shadow-md object-contain max-h-60 w-full"
-                />
+                <a href={transaction?.transferProof || "#"} target="_blank" rel="noopener noreferrer">
+                  <Image
+                    src={transaction?.transferProof || "user.png"}
+                    alt="Transfer Proof"
+                    width={500}
+                    height={300}
+                    className="rounded shadow-md object-contain max-h-60 w-full"
+                  />
+                </a>
               ) : (
                 <p className="text-sm text-gray-600">No transfer proof yet</p>
               )}
