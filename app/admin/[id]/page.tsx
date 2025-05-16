@@ -5,8 +5,9 @@ import { showToast } from "@/components/toast-notification";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { deleteTransaction, getTransactionById, updateTransactionStatus } from "@/lib/api/transactionApi";
+import { deleteParticipant, deleteTransaction, getTransactionById, updateTransactionStatus } from "@/lib/api/transactionApi";
 import { Transaction } from "@/types/response/transactionResponse";
+import { Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -20,6 +21,15 @@ const TransactionDetails = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
   const router = useRouter();
+  const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState(false);
+  const [participantId, setParticipantId] = useState("");
+  const handleCancelDelete = () => {
+    setIsDialogDeleteOpen(false);
+  };
+  const handleOpenDialogDeleteOpen = (participantId: string) => {
+    setIsDialogDeleteOpen(true);
+    setParticipantId(participantId);
+  }
 
   useEffect(() => {
     fetchTransaction();
@@ -36,6 +46,26 @@ const TransactionDetails = () => {
         type: "error",
         title: "Transaction Fetch Error",
         description: "Failed to fetch transaction data",
+      });
+    }
+  };
+
+  const handleDeleteParticipant = async () => {
+    if (!session?.accessToken) return;
+    try {
+      await deleteParticipant(session.accessToken, participantId);
+      fetchTransaction();
+      showToast({
+        type: "success",
+        title: "Participant Deleted",
+        description: "The participant was deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting participant:", error);
+      showToast({
+        type: "error",
+        title: "Participant Delete Error",
+        description: "Failed to delete participant",
       });
     }
   };
@@ -115,6 +145,14 @@ const TransactionDetails = () => {
         status={status} 
         isOpen={isDialogOpen} 
         onClose={handleCancel}
+      />
+      <ConfirmationDialog 
+        title="Delete Participant" 
+        description="Are you sure you want to delete this participant?" 
+        handleConfirm={handleDeleteParticipant} 
+        status="" 
+        isOpen={isDialogDeleteOpen} 
+        onClose={handleCancelDelete}
       />
 
         {/* Status Section */}
@@ -237,6 +275,7 @@ const TransactionDetails = () => {
                   <TableHead>Category</TableHead>
                   <TableHead>Size</TableHead>
                   <TableHead>Price</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -250,6 +289,16 @@ const TransactionDetails = () => {
                     <TableCell>{p.master_category?.name}</TableCell>
                     <TableCell>{p.size}</TableCell>
                     <TableCell>Rp {p.price.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDialogDeleteOpen(p.id.toString())}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

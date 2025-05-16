@@ -82,3 +82,12 @@ export const getParticipantByCategory = async (token: string, id: string) => {
     });
     return response.data;
 }
+
+export const deleteParticipant = async (token: string, id: string) => {
+    const response = await axiosInstance.delete(`/transaction/participant/user/${id}`, {
+      headers: {
+        "Authorization": `bearer ${token}`,
+      },
+    });
+    return response.data;
+}
