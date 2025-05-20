@@ -270,6 +270,7 @@ const TransactionDetails = () => {
                   <TableHead>#</TableHead>
                   <TableHead>First Name</TableHead>
                   <TableHead>Last Name</TableHead>
+                  <TableHead>Umur</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Category</TableHead>
@@ -284,6 +285,7 @@ const TransactionDetails = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{p.fname}</TableCell>
                     <TableCell>{p.lname}</TableCell>
+                    <TableCell>{p.umur}</TableCell>
                     <TableCell>{p.email}</TableCell>
                     <TableCell>{p.phone}</TableCell>
                     <TableCell>{p.master_category?.name}</TableCell>

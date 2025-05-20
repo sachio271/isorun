@@ -29,6 +29,7 @@ export interface MasterCategory {
     condition: string;
     master_categoryId: number;
     transactionsId: string;
+    umur: string;
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string
     master_category: MasterCategory;
@@ -85,6 +86,7 @@ export interface MasterCategory {
     transactionsId: string;
     pt: string;
     divisi: string;
+    umur: string;
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string
     master_category: MasterCategory;
