@@ -26,6 +26,7 @@ import { Participant } from "@/types/helper/participant";
 import { Transaction } from "@/types/response/transactionResponse";
 import { Loader2, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RegistrationPage() {
@@ -33,6 +34,7 @@ export default function RegistrationPage() {
   const [kabagFree, setKabagFree] = useState(0);
   const { data:session } = useSession();
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [isDialogErrorOpen, setDialogErrorOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("register");
   const [transaction, setTransaction] = useState<Transaction>();
@@ -79,6 +81,7 @@ export default function RegistrationPage() {
             break;
           default:
             setActiveTab("register");
+            setDialogErrorOpen(true);
         }
       } else {
         setActiveTab("register");
@@ -289,10 +292,24 @@ export default function RegistrationPage() {
     setDialogConfirmOpen(false);
   }
 
+  const router = useRouter();
+  const handleErrorCancel = () => {
+    setDialogErrorOpen(false);
+    router.push("/");
+  }
+
   return (
     <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('/banner.webp')" }}>
       <Header />
       <div className="backdrop-blur-xs min-h-screen bg-white/30 p-10 md:p-18">
+      <ConfirmationDialog
+        title="Registration on Maintenance" 
+        description="Pendaftaran sedang dalam proses penyesuaian harga, mohon maaf atas ketidaknyamanannya." 
+        handleConfirm={handleErrorCancel} 
+        status={""} 
+        isOpen={isDialogErrorOpen} 
+        onClose={handleErrorCancel}
+      />
       <ConfirmationDialog
         title="Action Confirmation" 
         description="Yakin Ingin Registrasi ? Karena setelah registrasi, pendaftaran akan menuju proses pembayaran dan data akan dikunci!" 
