@@ -24,6 +24,11 @@ export const columns: ColumnDef<Transaction>[] = [
     id: "employeeName",
   },
   {
+    header: "Employee EKTP",
+    accessorFn: (row) => row.users?.users_refId || "-",
+    id: "employeeEKTP",
+  },
+  {
     accessorKey: "status",
     header: "Status",
     filterFn: (row, columnId, filterValue) => {
