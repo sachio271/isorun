@@ -81,7 +81,7 @@ export default function RegistrationPage() {
             break;
           default:
             setActiveTab("register");
-            setDialogErrorOpen(true);
+            // setDialogErrorOpen(true);
         }
       } else {
         setActiveTab("register");
