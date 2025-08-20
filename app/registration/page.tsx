@@ -72,6 +72,7 @@ export default function RegistrationPage() {
             break;
           case 2:
             setActiveTab("invoice");
+            setDialogErrorOpen(true);
             break;
           case 3:
             setActiveTab("payment");
