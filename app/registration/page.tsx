@@ -5,10 +5,12 @@ import { ConfirmationDialog } from "@/components/confirmationDialog";
 import Header from "@/components/header";
 import { useLoading } from "@/components/loadingContext";
 import { showToast } from "@/components/toast-notification";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -24,9 +26,10 @@ import {
 import { createParticipant, createTransaction, getTransactionByUser, uploadTransactionImage } from "@/lib/api/transactionApi";
 import { Participant } from "@/types/helper/participant";
 import { Transaction } from "@/types/response/transactionResponse";
-import { Loader2, Trash } from "lucide-react";
+import { Building, Contact, Hash, Loader2, ShieldCheck, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { QRCodeCanvas } from 'qrcode.react';
 import { useEffect, useState } from "react";
 
 export default function RegistrationPage() {
@@ -526,57 +529,108 @@ export default function RegistrationPage() {
           </TabsContent>
 
           <TabsContent value="recap">
-            <Card>
-              <CardHeader>
-                <CardTitle>Step 5: Rekap Registrasi</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="text-center bg-gray-50 rounded-t-lg">
+                <CardTitle className="text-2xl text-green-600 font-bold">
+                  Pendaftaran Berhasil!
+                </CardTitle>
+                <CardDescription>
+                  Simpan halaman ini. Tunjukan Kode QR kepada panitia untuk check-in di hari H.
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="mb-4">Silahkan tunjukan kepada pihak administrasi di hari H acara:</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="font-medium text-gray-600">ID:</span>
-                  <span className="col-span-2">{transaction?.id}</span>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Left Side: Transaction Details */}
+                  <div className="md:col-span-2 space-y-6">
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold border-b pb-2">Detail Registrasi</h3>
+                      <div className="flex items-center">
+                        <Hash className="h-5 w-5 text-gray-500 mr-3" />
+                        <span className="font-medium text-gray-600 w-32">ID Registrasi:</span>
+                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-sm">
+                          {transaction?.id}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <Building className="h-5 w-5 text-gray-500 mr-3" />
+                        <span className="font-medium text-gray-600 w-32">PT:</span>
+                        <span>{transaction?.pt}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <ShieldCheck className="h-5 w-5 text-gray-500 mr-3" />
+                        <span className="font-medium text-gray-600 w-32">Divisi:</span>
+                        <span>{transaction?.divisi}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Contact className="h-5 w-5 text-gray-500 mr-3" />
+                        <span className="font-medium text-gray-600 w-32">Emergency Contact:</span>
+                        <span>
+                          {transaction?.emergencyName} ({transaction?.emergencyPhone})
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
+                      <p className="text-sm text-blue-700">Total Pembayaran</p>
+                      <p className="text-3xl font-bold text-blue-900">
+                        Rp {transaction?.total?.toLocaleString("id-ID")}
+                      </p>
+                    </div>
+                  </div>
 
-                  <span className="font-medium text-gray-600">PT:</span>
-                  <span className="col-span-2">{transaction?.pt}</span>
-
-                  <span className="font-medium text-gray-600">Divisi:</span>
-                  <span className="col-span-2">{transaction?.divisi}</span>
-
-                  <span className="font-medium text-gray-600">Emergency Contact:</span>
-                  <span className="col-span-2">
-                    {transaction?.emergencyName} ({transaction?.emergencyPhone})
-                  </span>
-
-                  <span className="font-medium text-gray-600">Total Dibayar:</span>
-                  <span className="col-span-2">Rp {transaction?.total?.toLocaleString("id-ID")}</span>
+                  <div className="flex flex-col items-center justify-center bg-white p-4 border rounded-lg shadow-sm">
+                    <h3 className="text-md font-semibold mb-2">Pindai di Meja Registrasi</h3>
+                    <div className="w-48 h-48">
+                      <QRCodeCanvas
+                        id="qr-code"
+                        value={transaction?.id || 'loading...'} // The value is the Transaction ID
+                        size={180} // Size of the QR code
+                        level={"H"} // Error correction level
+                        includeMargin={false}
+                        className="w-full h-full"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Gunakan kode ini untuk mempercepat proses check-in.
+                    </p>
+                  </div>
                 </div>
-                <div className="overflow-x-auto mt-4">
-                  <Table className="min-w-[700px]">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>#</TableHead>
-                        <TableHead>First Name</TableHead>
-                        <TableHead>Last Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Size</TableHead>
-                        <TableHead>Price</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {transaction?.participants?.map((p, index) => (
-                        <TableRow key={p.id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{p.fname}</TableCell>
-                          <TableCell>{p.lname}</TableCell>
-                          <TableCell>{p.email}</TableCell>
-                          <TableCell>{p.master_category?.name}</TableCell>
-                          <TableCell>{p.size}</TableCell>
-                          <TableCell>Rp {p.price?.toLocaleString()}</TableCell>
+
+                <div className="mt-8 pt-6 border-t">
+                  <h3 className="text-lg font-semibold mb-4">Detail Peserta Terdaftar</h3>
+                  <div className="overflow-x-auto rounded-lg border">
+                    <Table className="min-w-[700px]">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[50px]">#</TableHead>
+                          <TableHead>Nama Peserta</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Kategori</TableHead>
+                          <TableHead className="text-center font-bold">Ukuran Jersey</TableHead>
+                          <TableHead className="text-right">Biaya</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {transaction?.participants?.map((p, index) => (
+                          <TableRow key={p.id} className="even:bg-gray-50">
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell className="font-medium">
+                              {p.fname} {p.lname}
+                            </TableCell>
+                            <TableCell>{p.email}</TableCell>
+                            <TableCell>{p.master_category?.name}</TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="secondary" className="text-base px-3 py-1 bg-yellow-200 text-yellow-800 hover:bg-yellow-300">
+                                {p.size}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              Rp {p.price?.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </CardContent>
             </Card>

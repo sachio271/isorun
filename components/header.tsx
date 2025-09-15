@@ -46,8 +46,13 @@ function Header() {
     ]
   };
 
+  const supportLinks = [
+    { title: "Race Pack", link: "/support/race-pack" },
+    { title: "Registration", link: "/support/registration" },
+  ]
+
   const renderNavLinks = (role: string | undefined) => {
-    const links = role === "admin" ? adminLinks : userLinks[role as keyof typeof userLinks];
+    const links = role === "admin" ? adminLinks : role === "support" ? supportLinks : userLinks[role as keyof typeof userLinks];
     if (!links) return null;
 
     return (
@@ -127,7 +132,7 @@ function Header() {
             >
               <DropdownMenuLabel className="text-white">Menu</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/20" />
-              {(role === "admin" ? adminLinks : userLinks[role as keyof typeof userLinks])?.map(
+              {(role === "admin" ? adminLinks : role ==="support" ? supportLinks : userLinks[role as keyof typeof userLinks])?.map(
                 (item) => (
                   <DropdownMenuItem key={item.link} asChild>
                     <Link

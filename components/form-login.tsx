@@ -50,7 +50,11 @@ const FormLogin = () => {
         const role = session?.user?.role;
         if (role === "admin") {
             router.push("/admin");
-        } else {
+        } 
+        else if (role === "support") {
+            router.push("/support/registration");
+        }
+        else {
             router.push("/");
         }
     }
