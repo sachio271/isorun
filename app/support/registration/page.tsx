@@ -30,24 +30,21 @@ import { getRegistrationParticipant, updateRegistrationStatus } from "@/lib/api/
 import { IParticipant } from "@/types/helper/racePackResponse";
 import { IRegistrationTransaction, TRegistrationRecap } from "@/types/helper/registrationResponse";
 import {
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
-  PackageCheck,
-  PackageOpen,
+  PersonStanding,
   QrCode,
   Search,
   Shirt
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useState } from "react";
-// REMOVED: No longer need to import react-qr-reader
-
-// ... (The getTransactionStatus function remains the same) ...
 const getTransactionStatus = (participants: IParticipant[]) => {
   if (!participants || participants.length === 0) {
     return { text: 'No Participants', variant: 'outline' };
   }
-  const claimedCount = participants.filter(p => p.registrationDate !== null).length;
+  const claimedCount = participants.filter(p => p.registration === true).length;
   if (claimedCount === 0) return { text: 'Not Registered', variant: 'destructive' };
   if (claimedCount === participants.length) return { text: 'All Registered', variant: 'success' };
   return { text: 'Partially Registered', variant: 'secondary' };
@@ -55,24 +52,24 @@ const getTransactionStatus = (participants: IParticipant[]) => {
 
 
 const RegistrationAdmin = () => {
- const { data: session, status } = useSession();
- const [loading, setLoading] = useState(false);
- const [expandedRows, setExpandedRows] = useState(new Set());
- const [transaction, setTransaction] = useState<IRegistrationTransaction[]>([]);
- const [recap, setRecap] = useState<TRegistrationRecap>({});
- const [meta, setMeta] = useState<{ totalPages: number; currentPage: number; search: string } | null>(null);
-  const [isScannerOpen, setIsScannerOpen] = useState(false);
- const [filters, setFilters] = useState({
-   page: 1,
-   limit: 5,
-   search: '',
- });
+  const { data: session, status } = useSession();
+  const [isInitialLoading, setIsInitialLoading] = useState(true); 
+  const [loading, setLoading] = useState(false);
+  const [expandedRows, setExpandedRows] = useState(new Set());
+  const [transaction, setTransaction] = useState<IRegistrationTransaction[]>([]);
+  const [recap, setRecap] = useState<TRegistrationRecap>({});
+  const [meta, setMeta] = useState<{ totalPages: number; currentPage: number; search: string } | null>(null);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 5,
+    search: '',
+  });
 
-  // ... (fetchApplications, toggleRow, etc. remain the same) ...
   const fetchApplications = useCallback(async (currentFilters: typeof filters) => {
     if (status === 'authenticated' && session.accessToken) {
       try {
-        setLoading(true);
+        setLoading(true); // This runs for EVERY fetch
         const data = await getRegistrationParticipant(session.accessToken, currentFilters);
         setTransaction(data.data);
         setRecap(data.recap);
@@ -81,12 +78,44 @@ const RegistrationAdmin = () => {
         console.error("Failed to fetch data:", error);
         showToast({ title: "Error", description: "Could not fetch registration data.", type: "error" });
       } finally {
-        setLoading(false);
+        setLoading(false); // This runs for EVERY fetch
+        // IMPORTANT: Only turn off the initial, full-page loader ONCE.
+        if (isInitialLoading) {
+          setIsInitialLoading(false);
+        }
       }
     } else if (status === 'unauthenticated') {
       setLoading(false);
+      setIsInitialLoading(false);
     }
-  }, [session?.accessToken, status]);
+  }, [session?.accessToken, status, isInitialLoading]); // Add isInitialLoading here
+
+  const processRegistrationUpdate = useCallback(async (id: number) => {
+    if (!session?.accessToken) return;
+    try {
+      await updateRegistrationStatus(id, session.accessToken);
+      // 'filters' is a dependency because it's used in the refetch
+      await fetchApplications(filters); 
+      showToast({ title: "Success!", description: `Status for ${id} has been updated.`, type: "success" });
+    } catch (error) {
+      console.error(error);
+      showToast({ title: "Error", description: "Failed to update status. The ID might be invalid.", type: "error" });
+    }
+  }, [session?.accessToken, fetchApplications, filters]);
+
+  const handleToggleStatus = async (id: number) => {
+    if (window.confirm("Are you sure you want to manually update this item's status?")) {
+      await processRegistrationUpdate(id);
+    }
+  };
+
+  const handleScanSuccess = useCallback((decodedText: string) => {
+    if (decodedText) {
+      setIsScannerOpen(false); // This state setter is stable
+      console.log(`QR Code Scanned: ${decodedText}`);
+      processRegistrationUpdate(+decodedText);
+    }
+  }, [processRegistrationUpdate]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,6 +123,16 @@ const RegistrationAdmin = () => {
     }, 300);
     return () => clearTimeout(timer);
   }, [filters, fetchApplications]);
+
+  if (isInitialLoading) { 
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <div className="animate-bounce">
+                <Shirt className="h-16 w-16 text-gray-400" />
+            </div>
+        </div>
+    );
+  }
 
   const toggleRow = (trxId: string) => {
     const newExpandedRows = new Set(expandedRows);
@@ -104,44 +143,6 @@ const RegistrationAdmin = () => {
     }
     setExpandedRows(newExpandedRows);
   };
-
-  const processRegistrationUpdate = async (id: string) => {
-    if (!session?.accessToken) return;
-    try {
-      await updateRegistrationStatus(id, session.accessToken);
-      await fetchApplications(filters);
-      showToast({ title: "Success!", description: `Status for ${id} has been updated.`, type: "success" });
-    } catch (error) {
-      console.error(error);
-      showToast({ title: "Error", description: "Failed to update status. The ID might be invalid.", type: "error" });
-    }
-  };
-
-  const handleToggleStatus = async (id: string) => {
-    if (window.confirm("Are you sure you want to manually update this item's status?")) {
-      await processRegistrationUpdate(id);
-    }
-  };
-
-  // UPDATED: The success callback now directly receives the text.
-  const handleScanSuccess = (decodedText: string) => {
-    if (decodedText) {
-      setIsScannerOpen(false); // Close the scanner
-      console.log(`QR Code Scanned: ${decodedText}`);
-      processRegistrationUpdate(decodedText);
-    }
-  };
-
-  // ... (loading state, handlePageChange, handleSearchChange remain the same) ...
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-bounce">
-          <Shirt className="h-16 w-16 text-gray-400" />
-        </div>
-      </div>
-    );
-  }
 
   const handlePageChange = (newPage: number) => {
     setFilters(prev => ({ ...prev, page: newPage }));
@@ -197,10 +198,13 @@ const RegistrationAdmin = () => {
             </div>
           </CardHeader>
           <CardContent>
-            {/* ... (The entire Table and Pagination structure remains exactly the same) ... */}
             <div className="border rounded-lg overflow-hidden">
-                <Table className="bg-blue-50">
-                {/* Table Header */}
+                {loading && (
+                    <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10">
+                        <p className="text-gray-600 font-semibold">Searching...</p>
+                    </div>
+                )}
+                <Table className={`bg-blue-50 transition-opacity duration-200 ${loading ? 'opacity-50' : 'opacity-100'}`}>
                 <TableHeader>
                     <TableRow>
                     <TableHead className="w-12"></TableHead>
@@ -238,15 +242,6 @@ const RegistrationAdmin = () => {
                                 <div className="p-4">
                                 <div className="flex mb-4 text-sm text-gray-600 justify-between items-center">
                                     <h4 className="font-semibold mb-2 ml-2">Participant Details:</h4>
-                                    {status.text === 'All Registered' ? (
-                                    <div className="flex items-center justify-end text-green-600 font-semibold">
-                                        <PackageCheck className="h-4 w-4 mr-2"/> Registered
-                                    </div>
-                                    ) : (
-                                    <Button size="sm" className="hover: cursor-pointer" variant="default" onClick={() => handleToggleStatus(trx.id)}>
-                                        <PackageOpen className="h-4 w-4 mr-2" /> Mark as Registered
-                                    </Button>
-                                    )}
                                 </div>
                                 <Table>
                                     <TableHeader>
@@ -263,6 +258,17 @@ const RegistrationAdmin = () => {
                                         <TableCell>{p.identityId}</TableCell>
                                         <TableCell>
                                             <Badge className="text-base bg-cyan-700" variant="default">{p.master_category.name || 'N/A'}</Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          {status.text === 'All Registered' ? (
+                                          <div className="flex items-center justify-end text-green-600 font-semibold">
+                                              <PersonStanding className="h-4 w-4 mr-2"/> Registered
+                                          </div>
+                                          ) : (
+                                          <Button size="sm" className="hover: cursor-pointer" variant="default" onClick={() => handleToggleStatus(p.id)}>
+                                              <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as Registered
+                                          </Button>
+                                          )}
                                         </TableCell>
                                         </TableRow>
                                     ))}
@@ -310,14 +316,12 @@ const RegistrationAdmin = () => {
         </Card>
       </div>
       
-      {/* UPDATED: The Dialog now renders your new QrScanner component */}
       <Dialog open={isScannerOpen} onOpenChange={setIsScannerOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Scan Participant QR Code</DialogTitle>
           </DialogHeader>
           <div className="p-4 rounded-lg">
-            {/* Render the new component only when the dialog is open */}
             {isScannerOpen && <QrScanner onScanSuccess={handleScanSuccess} />}
           </div>
         </DialogContent>

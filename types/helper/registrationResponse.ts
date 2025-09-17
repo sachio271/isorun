@@ -21,7 +21,7 @@ export type IRegistrationParticipant = {
   master_categoryId: number;
   transactionsId: string;
   racePack: boolean;
-  registrationDate: string | null;
+  registration: boolean;
   master_category: {
     id: number;
     name: string;

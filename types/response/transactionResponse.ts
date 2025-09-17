@@ -7,7 +7,7 @@ export interface MasterCategory {
     updatedAt: string; // ISO 8601 Date string
   }
   
-  export interface Participant {
+  export interface IParticipant {
     id: number;
     fname: string;
     lname: string;
@@ -30,6 +30,8 @@ export interface MasterCategory {
     master_categoryId: number;
     transactionsId: string;
     umur: string;
+    registration: boolean;
+    racePack: boolean;
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string
     master_category: MasterCategory;
@@ -46,7 +48,7 @@ export interface MasterCategory {
     status: number;
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string
-    participants: Participant[];
+    participants: IParticipant[];
     users: User;
   }
   

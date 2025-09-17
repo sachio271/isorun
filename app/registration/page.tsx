@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -25,8 +26,8 @@ import {
 } from "@/components/ui/tabs";
 import { createParticipant, createTransaction, getTransactionByUser, uploadTransactionImage } from "@/lib/api/transactionApi";
 import { Participant } from "@/types/helper/participant";
-import { Transaction } from "@/types/response/transactionResponse";
-import { Building, Contact, Hash, Loader2, ShieldCheck, Trash } from "lucide-react";
+import { IParticipant, Transaction } from "@/types/response/transactionResponse";
+import { Building, Contact, Hash, Loader2, QrCode, ShieldCheck, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { QRCodeCanvas } from 'qrcode.react';
@@ -47,6 +48,14 @@ export default function RegistrationPage() {
   const handleCancelUpload = () => {
     setDialogConfirmUploadOpen(false);
   }
+  
+  const participantsRecap = transaction?.participants || [];
+  const totalParticipants = participantsRecap.length;
+  const registeredCount = participantsRecap.filter(p => p.registration === true).length;
+  const racePackTakenCount = participantsRecap.filter(p => p.racePack === true).length;
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState<IParticipant | null>(null);
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -577,20 +586,29 @@ export default function RegistrationPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center justify-center bg-white p-4 border rounded-lg shadow-sm">
-                    <h3 className="text-md font-semibold mb-2">Pindai di Meja Registrasi</h3>
-                    <div className="w-48 h-48">
-                      <QRCodeCanvas
-                        id="qr-code"
-                        value={transaction?.id || 'loading...'} // The value is the Transaction ID
-                        size={180} // Size of the QR code
-                        level={"H"} // Error correction level
-                        includeMargin={false}
-                        className="w-full h-full"
-                      />
+                  <div className="flex flex-col items-center justify-center bg-white p-4 border rounded-lg shadow-sm space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Status Pendaftaran</h3>
+                    
+                    {/* Registration Status */}
+                    <div className="w-full text-center bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm font-medium text-blue-600">Peserta Terdaftar</p>
+                      <p className="text-3xl font-bold text-blue-900">
+                        {registeredCount}
+                        <span className="text-xl font-medium text-gray-500"> / {totalParticipants}</span>
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Gunakan kode ini untuk mempercepat proses check-in.
+
+                    {/* Race Pack Status */}
+                    <div className="w-full text-center bg-green-50 p-3 rounded-lg">
+                      <p className="text-sm font-medium text-green-600">Race Pack Diambil</p>
+                      <p className="text-3xl font-bold text-green-900">
+                        {racePackTakenCount}
+                        <span className="text-xl font-medium text-gray-500"> / {totalParticipants}</span>
+                      </p>
+                    </div>
+                    
+                    <p className="text-xs text-gray-500 mt-2 text-center pt-2">
+                      Tunjukan halaman ini kepada panitia saat pengambilan race pack.
                     </p>
                   </div>
                 </div>
@@ -607,6 +625,7 @@ export default function RegistrationPage() {
                           <TableHead>Kategori</TableHead>
                           <TableHead className="text-center font-bold">Ukuran Jersey</TableHead>
                           <TableHead className="text-right">Biaya</TableHead>
+                          <TableHead className="text-center">Kode QR</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -626,6 +645,19 @@ export default function RegistrationPage() {
                             <TableCell className="text-right">
                               Rp {p.price?.toLocaleString()}
                             </TableCell>
+                            <TableCell className="text-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedParticipant(p);
+                                  setIsQrModalOpen(true);
+                                }}
+                              >
+                                <QrCode className="h-4 w-4 mr-2" />
+                                Tampilkan
+                              </Button>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -634,6 +666,29 @@ export default function RegistrationPage() {
                 </div>
               </CardContent>
             </Card>
+            <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-center text-xl">Kode QR Peserta</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col items-center justify-center py-4 gap-4">
+                  <div className="w-64 h-64 p-4 border rounded-lg">
+                    <QRCodeCanvas
+                      id="qr-code-participant"
+                      value={selectedParticipant?.id.toString() || ''}
+                      size={240}
+                      level={"H"}
+                      includeMargin={false}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold">{selectedParticipant?.fname} {selectedParticipant?.lname}</p>
+                    <p className="font-mono bg-gray-100 px-2 py-1 rounded text-sm mt-1">{selectedParticipant?.id}</p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
       </div>
