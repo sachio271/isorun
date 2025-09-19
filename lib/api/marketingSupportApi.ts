@@ -25,7 +25,7 @@ export const getRacePackParticipant = async (token: string, filter?: PaginationQ
   return response.data;
 };
 
-export const updateRegistrationStatus = async (id: number, token: string) => {
+export const updateRegistrationStatus = async (id: string, token: string) => {
   const response = await axiosInstance.put(`/participant/registration/${id}`, {}, {
     headers: {
       Authorization: `bearer ${token}`,

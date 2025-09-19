@@ -31,6 +31,7 @@ export interface MasterCategory {
     transactionsId: string;
     umur: string;
     registration: boolean;
+    uuid: string;
     racePack: boolean;
     createdAt: string; // ISO 8601 Date string
     updatedAt: string; // ISO 8601 Date string

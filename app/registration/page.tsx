@@ -675,7 +675,7 @@ export default function RegistrationPage() {
                   <div className="w-64 h-64 p-4 border rounded-lg">
                     <QRCodeCanvas
                       id="qr-code-participant"
-                      value={selectedParticipant?.id.toString() || ''}
+                      value={selectedParticipant?.uuid || ''}
                       size={240}
                       level={"H"}
                       includeMargin={false}

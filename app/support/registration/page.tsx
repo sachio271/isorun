@@ -39,7 +39,7 @@ import {
   Shirt
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 const getTransactionStatus = (participants: IParticipant[]) => {
   if (!participants || participants.length === 0) {
     return { text: 'No Participants', variant: 'outline' };
@@ -66,6 +66,11 @@ const RegistrationAdmin = () => {
     search: '',
   });
 
+  // Ref to store the characters from the scanner
+  const scannedCodeRef = useRef('');
+  // Ref to store the timer
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const fetchApplications = useCallback(async (currentFilters: typeof filters) => {
     if (status === 'authenticated' && session.accessToken) {
       try {
@@ -90,7 +95,8 @@ const RegistrationAdmin = () => {
     }
   }, [session?.accessToken, status, isInitialLoading]); // Add isInitialLoading here
 
-  const processRegistrationUpdate = useCallback(async (id: number) => {
+  const processRegistrationUpdate = useCallback(async (id: string) => {
+    console.log(id);
     if (!session?.accessToken) return;
     try {
       await updateRegistrationStatus(id, session.accessToken);
@@ -103,7 +109,59 @@ const RegistrationAdmin = () => {
     }
   }, [session?.accessToken, fetchApplications, filters]);
 
-  const handleToggleStatus = async (id: number) => {
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // If the event is coming from an input field, ignore it.
+      // This prevents it from firing while you are typing in the search bar.
+      if ((event.target as HTMLElement).tagName === 'INPUT') {
+        return;
+      }
+
+      // If the key is "Enter", it's the end of a scan
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevents form submission
+
+        // Check if the captured code is a reasonable length for an ID
+        console.log(scannedCodeRef.current.length)
+        if (scannedCodeRef.current.length > 15) {
+          console.log('Scanner detected ID:', scannedCodeRef.current);
+          // Call your existing function with the scanned ID
+          processRegistrationUpdate(scannedCodeRef.current);
+        }
+        
+        // Clear the captured code for the next scan
+        scannedCodeRef.current = '';
+        return;
+      }
+      
+      // Append the pressed key to our string
+      scannedCodeRef.current += event.key;
+
+      // Reset the timer on each key press
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      // Set a timer. If no new key is pressed within 100ms, clear the code.
+      // This distinguishes a fast scan from slow manual typing.
+      timeoutRef.current = setTimeout(() => {
+        scannedCodeRef.current = '';
+      }, 100);
+    };
+
+    // Add the listener when the component mounts
+    window.addEventListener('keydown', handleKeyPress);
+
+    // IMPORTANT: Remove the listener when the component unmounts to prevent memory leaks
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [processRegistrationUpdate]);
+
+  const handleToggleStatus = async (id: string) => {
     if (window.confirm("Are you sure you want to manually update this item's status?")) {
       await processRegistrationUpdate(id);
     }
@@ -113,7 +171,7 @@ const RegistrationAdmin = () => {
     if (decodedText) {
       setIsScannerOpen(false); // This state setter is stable
       console.log(`QR Code Scanned: ${decodedText}`);
-      processRegistrationUpdate(+decodedText);
+      processRegistrationUpdate(decodedText);
     }
   }, [processRegistrationUpdate]);
 
@@ -265,7 +323,7 @@ const RegistrationAdmin = () => {
                                               <PersonStanding className="h-4 w-4 mr-2"/> Registered
                                           </div>
                                           ) : (
-                                          <Button size="sm" className="hover: cursor-pointer" variant="default" onClick={() => handleToggleStatus(p.id)}>
+                                          <Button size="sm" className="hover: cursor-pointer" variant="default" onClick={() => handleToggleStatus(p.uuid)}>
                                               <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as Registered
                                           </Button>
                                           )}

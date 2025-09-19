@@ -22,6 +22,7 @@ export type IRegistrationParticipant = {
   transactionsId: string;
   racePack: boolean;
   registration: boolean;
+  uuid: string;
   master_category: {
     id: number;
     name: string;
