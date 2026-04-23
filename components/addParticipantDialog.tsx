@@ -54,7 +54,7 @@ export default function AddParticipantDialog({
   const isFreeClaimChecked = (isEmployee && free > 0) || manualFreeClaimChecked;
 
   const filteredCategories = categories.filter(
-    (cat) => cat.type === (selectedUser?.status === "employee" ? "employee" : "family")
+    (cat) => cat.status === 1 && cat.type === (selectedUser?.status === "employee" ? "employee" : "family")
   );
 
   const [form, setForm] = useState({
@@ -378,7 +378,7 @@ export default function AddParticipantDialog({
               <SelectValue placeholder="Select Size" />
             </SelectTrigger>
             <SelectContent>
-              {["S (48cm x 66cm)", "M (50cm x 68cm)", "L (52cm x 70cm)", "XL (54cm x 72cm)", "XXL (56cm x 74cm)"].map((type) => (
+              {["S (48cm x 68cm)", "M (51cm x 70cm)", "L (54cm x 72cm)", "XL (58cm x 74cm)", "XXL (62cm x 74cm)", "S Kids (39cm x 52cm)", "M Kids (42cm x 55cm)", "L Kids (45cm x 58cm)"].map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
                 </SelectItem>

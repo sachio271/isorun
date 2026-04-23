@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  // metadataBase: new URL('http://localhost:3000'),
-  metadataBase: new URL('https://isoplusrun.wingssurya.com/apis'),
+  metadataBase: new URL('http://localhost:3000'),
+  // metadataBase: new URL('https://isoplusrun.wingssurya.com/apis'),
   title: 'Isoplus Run',
   description: 'Your app description',
   icons: {

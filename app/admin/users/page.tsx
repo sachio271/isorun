@@ -1,47 +1,56 @@
 'use client';
 
 import { showToast } from "@/components/toast-notification";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllUser } from "@/lib/api/userApi";
-import { UserResponse } from "@/types/response/userResponse";
+import { getAllUserPaginated } from "@/lib/api/userApi";
+import { PaginationMeta, UserResponse } from "@/types/response/userResponse";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { columns } from "./data-table/column";
 import { DataTable } from "./data-table/data-table";
 
-export default function Users() {
-    const {data: session} = useSession()
-    const [dataUsers, setDataUsers] = useState<UserResponse[]>([])
-    useEffect(() => {
-        fetchDataTransaction()
-    }, [session])
-    
-    const fetchDataTransaction = async () => {
-        if(!session?.accessToken) return
+const DEFAULT_META: PaginationMeta = { totalItems: 0, itemsPerPage: 10, totalPages: 1, currentPage: 1 };
 
+export default function Users() {
+    const { data: session } = useSession();
+    const [dataUsers, setDataUsers] = useState<UserResponse[]>([]);
+    const [meta, setMeta] = useState<PaginationMeta>(DEFAULT_META);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchDataUsers = async (p: number, s: string) => {
+        if (!session?.accessToken) return;
+        setIsLoading(true);
         try {
-            const trx = await getAllUser(session.accessToken)
-            setDataUsers(trx)
-            console.log(trx)   
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            showToast({
-                type: "error",
-                title: "Data Fetch Error",
-                description: "Failed to fetch data",
-            });
+            const res = await getAllUserPaginated(session.accessToken, { page: p, limit: 10, search: s });
+            setDataUsers(res.data);
+            setMeta(res.meta);
+        } catch {
+            showToast({ type: "error", title: "Gagal", description: "Tidak dapat memuat data pengguna." });
         }
-    }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchDataUsers(page, search);
+    }, [session, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handlePageChange = (newPage: number) => setPage(newPage);
+    const handleSearchChange = (s: string) => { setSearch(s); setPage(1); };
+
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Users Data</CardTitle>
-            </CardHeader>
-            <CardContent className="w-full overflow-x-auto px-2 sm:px-4 md:px-6">
-                <div className="w-full overflow-x-auto">
-                    <DataTable columns={columns} data={dataUsers} />
-                </div>
-            </CardContent>
-        </Card>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+            <div>
+                <h1 className="text-xl font-bold text-gray-800">Data Pengguna</h1>
+                <p className="text-sm text-gray-400 mt-0.5">{meta.totalItems.toLocaleString("id-ID")} pengguna terdaftar</p>
+            </div>
+
+            <DataTable
+                data={dataUsers}
+                meta={meta}
+                onPageChange={handlePageChange}
+                onSearchChange={handleSearchChange}
+                isLoading={isLoading}
+            />
+        </div>
     );
 }

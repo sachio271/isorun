@@ -1,4 +1,4 @@
-import { FamilyRef, UserData, UserResponse, UsersRef } from "@/types/response/userResponse";
+import { FamilyRef, PaginatedResponse, UserData, UserResponse, UsersRef } from "@/types/response/userResponse";
 import axiosInstance from "../axiosInstance";
 
 export const getUserRef = async (token: string, id: string): Promise<UserData[]> => {
@@ -19,6 +19,21 @@ export const getAllUser = async (token: string): Promise<UserResponse[]> => {
     return response.data;
 }
 
+export const getAllUserPaginated = async (
+  token: string,
+  params: { page: number; limit: number; search?: string }
+): Promise<PaginatedResponse<UserResponse>> => {
+  const response = await axiosInstance.get<PaginatedResponse<UserResponse>>(`/user`, {
+    headers: { Authorization: `bearer ${token}` },
+    params: {
+      page: params.page,
+      limit: params.limit,
+      ...(params.search ? { search: params.search } : {}),
+    },
+  });
+  return response.data;
+};
+
 export const getUserById = async (token: string, id: string): Promise<UserResponse[]> => {
   const response = await axiosInstance.get<UserResponse[]>(`/user/${id}`, {
     headers: {
@@ -36,6 +51,21 @@ export const getAllUserRef = async (token: string): Promise<UsersRef[]> => {
   });
   return response.data;
 }
+
+export const getAllUserRefPaginated = async (
+  token: string,
+  params: { page: number; limit: number; search?: string }
+): Promise<PaginatedResponse<UsersRef>> => {
+  const response = await axiosInstance.get<PaginatedResponse<UsersRef>>(`/user/userRef`, {
+    headers: { Authorization: `bearer ${token}` },
+    params: {
+      page: params.page,
+      limit: params.limit,
+      ...(params.search ? { search: params.search } : {}),
+    },
+  });
+  return response.data;
+};
 
 export const addUser = async (token: string, formData: FormData): Promise<UsersRef> => {
   const response = await axiosInstance.post<UsersRef>(`/user`, formData, {

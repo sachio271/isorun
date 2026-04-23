@@ -3,6 +3,7 @@ export interface CategoryResponse {
     name: string;
     type: string;
     price: number;
+    status: number;
     createdAt: string;
     updatedAt: string;
 }

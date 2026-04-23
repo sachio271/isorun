@@ -2,16 +2,75 @@
 
 import { ConfirmationDialog } from "@/components/confirmationDialog";
 import { showToast } from "@/components/toast-notification";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { deleteParticipant, deleteTransaction, getTransactionById, updateTransactionStatus } from "@/lib/api/transactionApi";
 import { Transaction } from "@/types/response/transactionResponse";
-import { Trash } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Building,
+  CalendarDays,
+  Check,
+  ClipboardList,
+  Contact,
+  CreditCard,
+  Hash,
+  ShieldCheck,
+  Trash,
+  UserPlus,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const STATUS_STEPS = [
+  { key: 1,  label: "Konfirmasi Data",       icon: ClipboardList },
+  { key: 2,  label: "Menunggu Transfer",      icon: CreditCard },
+  { key: 3,  label: "Konfirmasi Pembayaran",  icon: ShieldCheck },
+  { key: 4,  label: "Selesai",               icon: BadgeCheck },
+];
+
+function StatusTimeline({ status }: { status: number }) {
+  if (status === -1) {
+    return (
+      <div className="flex items-center gap-3 text-red-500">
+        <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center">
+          <Trash className="w-4 h-4" />
+        </div>
+        <span className="font-semibold">Data Ditolak</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      {STATUS_STEPS.map((step, i) => {
+        const done = status > step.key;
+        const current = status === step.key;
+        const Icon = step.icon;
+        return (
+          <div key={step.key} className="flex items-center">
+            <div className="flex flex-col items-center gap-1">
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all
+                ${done ? "bg-green-500 text-white" : current ? "bg-[#263C7D] text-white ring-4 ring-[#263C7D]/20" : "bg-gray-200 text-gray-400"}`}>
+                {done ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+              </div>
+              <span className={`hidden md:block text-xs font-medium ${current ? "text-[#263C7D]" : done ? "text-green-600" : "text-gray-400"}`}>
+                {step.label}
+              </span>
+            </div>
+            {i < STATUS_STEPS.length - 1 && (
+              <div className={`h-0.5 w-8 md:w-14 mx-1 mb-4 rounded ${status > step.key ? "bg-green-400" : "bg-gray-200"}`} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 const TransactionDetails = () => {
   const params = useParams();
@@ -23,30 +82,16 @@ const TransactionDetails = () => {
   const router = useRouter();
   const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState(false);
   const [participantId, setParticipantId] = useState("");
-  const handleCancelDelete = () => {
-    setIsDialogDeleteOpen(false);
-  };
-  const handleOpenDialogDeleteOpen = (participantId: string) => {
-    setIsDialogDeleteOpen(true);
-    setParticipantId(participantId);
-  }
 
-  useEffect(() => {
-    fetchTransaction();
-  }, [session]);
+  useEffect(() => { fetchTransaction(); }, [session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchTransaction = async () => {
     if (!session?.accessToken) return;
     try {
       const data = await getTransactionById(session.accessToken, id);
       setTransaction(data);
-    } catch (error) {
-      console.error("Error fetching transaction:", error);
-      showToast({
-        type: "error",
-        title: "Transaction Fetch Error",
-        description: "Failed to fetch transaction data",
-      });
+    } catch {
+      showToast({ type: "error", title: "Fetch Error", description: "Gagal memuat data transaksi." });
     }
   };
 
@@ -55,64 +100,26 @@ const TransactionDetails = () => {
     try {
       await deleteParticipant(session.accessToken, participantId);
       fetchTransaction();
-      showToast({
-        type: "success",
-        title: "Participant Deleted",
-        description: "The participant was deleted successfully",
-      });
-    } catch (error) {
-      console.error("Error deleting participant:", error);
-      showToast({
-        type: "error",
-        title: "Participant Delete Error",
-        description: "Failed to delete participant",
-      });
+      showToast({ type: "success", title: "Peserta Dihapus", description: "Data peserta berhasil dihapus." });
+    } catch {
+      showToast({ type: "error", title: "Gagal", description: "Tidak dapat menghapus peserta." });
     }
   };
 
   const handleStatusChange = async (status: string) => {
     if (!session?.accessToken) return;
     let newStatus;
-    if (status === "1") {
-        newStatus = 2; // Confirm Data
-    }
-    else if (status === "3") {
-        newStatus = 4; // Confirm Payment
-    }
-    if (status === "-1") {
-        await handleDelete();
-        setIsDialogOpen(false);
-        return;
-    }
-    else if (status === "-2") {
-      newStatus = 2;
-    }
+    if (status === "1") newStatus = 2;
+    else if (status === "3") newStatus = 4;
+    if (status === "-1") { await handleDelete(); setIsDialogOpen(false); return; }
+    else if (status === "-2") newStatus = 2;
     try {
-        await updateTransactionStatus(session.accessToken, id, newStatus?.toString() ?? '1');
-        fetchTransaction();
+      await updateTransactionStatus(session.accessToken, id, newStatus?.toString() ?? "1");
+      fetchTransaction();
+      showToast({ type: "success", title: "Status Diperbarui", description: "Status transaksi berhasil diubah." });
+    } catch {
+      showToast({ type: "error", title: "Gagal", description: "Tidak dapat mengubah status transaksi." });
     }
-    catch (error) {
-        console.error("Error updating transaction status:", error);
-        showToast({
-          type: "error",
-          title: "Transaction Update Error",
-          description: "Failed to update transaction status",
-        });
-        return;
-    }
-    showToast({
-      type: "success",
-      title: "Status Updated",
-      description: "The transaction status was updated successfully",
-    });
-  };
-
-  const handleActionClick = (status: string) => {
-    setStatus(status);
-    setIsDialogOpen(true);
-  };
-
-  const handleCancel = () => {
     setIsDialogOpen(false);
   };
 
@@ -121,193 +128,192 @@ const TransactionDetails = () => {
     try {
       await deleteTransaction(session.accessToken, id);
       router.push("/admin");
-      showToast({
-        type: "success",
-        title: "Data Rejected",
-        description: "The transaction data was rejected successfully",
-      });
-    } catch (error) {
-      console.error("Error rejecting transaction:", error);
-      showToast({
-        type: "error",
-        title: "Transaction Reject Error",
-        description: "Failed to reject transaction data",
-      });
+      showToast({ type: "success", title: "Data Ditolak", description: "Transaksi berhasil ditolak." });
+    } catch {
+      showToast({ type: "error", title: "Gagal", description: "Tidak dapat menolak transaksi." });
     }
   };
 
   return (
-    <div className="p-3md:p-9 space-y-6">
-      <ConfirmationDialog 
-        title="Action Confirmation" 
-        description="Are you sure you want to proceed with this action?" 
-        handleConfirm={handleStatusChange} 
-        status={status} 
-        isOpen={isDialogOpen} 
-        onClose={handleCancel}
+    <div className="space-y-6">
+      <ConfirmationDialog
+        title="Konfirmasi Aksi"
+        description="Apakah anda yakin ingin melanjutkan aksi ini?"
+        handleConfirm={handleStatusChange}
+        status={status}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
       />
-      <ConfirmationDialog 
-        title="Delete Participant" 
-        description="Are you sure you want to delete this participant?" 
-        handleConfirm={handleDeleteParticipant} 
-        status="" 
-        isOpen={isDialogDeleteOpen} 
-        onClose={handleCancelDelete}
+      <ConfirmationDialog
+        title="Hapus Peserta"
+        description="Apakah anda yakin ingin menghapus peserta ini?"
+        handleConfirm={handleDeleteParticipant}
+        status=""
+        isOpen={isDialogDeleteOpen}
+        onClose={() => setIsDialogDeleteOpen(false)}
       />
 
-        {/* Status Section */}
-        <Card className="border-l-4 border-blue-500 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-lg text-blue-700">Transaction Status</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
-            <span className="text-sm font-medium">
-              {transaction?.status === 1
-                ? "✅ Waiting Data Confirmation"
-                : transaction?.status === 2
-                ? "⏳ Waiting Transfer"
-                : transaction?.status === 3
-                ? "✅ Waiting Payment Confirmation"
-                : transaction?.status === 4
-                ? "✅ Payment Confirmed"
-                : transaction?.status === -1
-                ? "❌ Data Rejected"
-                : "⏳ Pending"}
-            </span>
+      {/* Back + title */}
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => router.push("/admin")} className="rounded-xl hover:bg-white/60 cursor-pointer">
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div>
+          <h1 className="text-xl font-bold text-gray-800">Detail Transaksi</h1>
+          <p className="text-xs text-gray-400 font-mono">{id}</p>
+        </div>
+      </div>
 
-            {(transaction?.status === 1) && (
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button className="bg-red-800 hover:cursor-pointer" onClick={() => handleActionClick("-1")}>
-                  Reject Data
-                </Button>
-                <Button className="hover:cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>
-                  Confirm Data
-                </Button>
-              </div>
+      {/* Status card */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Status Transaksi</p>
+            <StatusTimeline status={transaction?.status ?? 1} />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0">
+            {transaction?.status === 1 && (
+              <Button className="bg-[#263C7D] hover:bg-[#1e2f61] cursor-pointer" onClick={() => { setStatus("1"); setIsDialogOpen(true); }}>
+                Konfirmasi Data
+              </Button>
             )}
-
-            {(transaction?.status === 3) && (
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button className="bg-amber-600 hover:cursor-pointer" onClick={() => handleActionClick("-2")}>
-                  Reupload
+            {transaction?.status === 3 && (
+              <>
+                <Button variant="outline" className="border-amber-200 text-amber-600 hover:bg-amber-50 cursor-pointer" onClick={() => { setStatus("-2"); setIsDialogOpen(true); }}>
+                  Minta Reupload
                 </Button>
-                <Button className="hover:cursor-pointer" onClick={() => handleActionClick(transaction.status.toString())}>
-                  Confirm Payment
+                <Button className="bg-[#263C7D] hover:bg-[#1e2f61] cursor-pointer" onClick={() => { setStatus("3"); setIsDialogOpen(true); }}>
+                  Konfirmasi Pembayaran
                 </Button>
-              </div>
+              </>
             )}
-          </CardContent>
+            {transaction?.status === 4 && (
+              <Badge className="bg-green-100 text-green-700 px-4 py-2 text-sm">Transaksi Selesai</Badge>
+            )}
+            {transaction?.status !== -1 && (
+              <Button variant="outline" className="border-red-200 text-red-500 hover:bg-red-50 cursor-pointer" onClick={() => { setStatus("-1"); setIsDialogOpen(true); }}>
+                Cancel Transaction
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
-        </Card>
+      {/* Info + Transfer proof */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Transaction info */}
+        <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+          <h2 className="font-semibold text-gray-800 border-b pb-3">Informasi Transaksi</h2>
 
-        {/* Info + Transfer Proof */}
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Transaction Info (left) */}
-          <Card className="w-full md:w-2/3 shadow-md rounded-2xl border">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-gray-900">Transaction Info</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 text-sm text-gray-700">
-              <div className="grid grid-cols-3 gap-2">
-                <span className="font-medium text-gray-600">ID:</span>
-                <span className="col-span-2">{transaction?.id}</span>
-
-                <span className="font-medium text-gray-600">PT:</span>
-                <span className="col-span-2">{transaction?.pt}</span>
-
-                <span className="font-medium text-gray-600">Divisi:</span>
-                <span className="col-span-2">{transaction?.divisi}</span>
-
-                <span className="font-medium text-gray-600">Emergency Contact:</span>
-                <span className="col-span-2">
-                  {transaction?.emergencyName} ({transaction?.emergencyPhone})
-                </span>
-
-                <span className="font-medium text-gray-600">Total:</span>
-                <span className="col-span-2">Rp {transaction?.total.toLocaleString("id-ID")}</span>
-
-                <span className="font-medium text-gray-600">Date:</span>
-                <span className="col-span-2">
-                  {transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString() : "-"}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
-
-          {/* Transfer Proof (right) */}
-          <Card className="w-full md:w-1/3">
-            <CardHeader>
-              <CardTitle>Transfer Proof</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {transaction?.transferProof !== '-' ? (
-                <a href={transaction?.transferProof || "#"} target="_blank" rel="noopener noreferrer">
-                  <Image
-                    src={transaction?.transferProof || "/user.png"}
-                    alt="Transfer Proof"
-                    width={500}
-                    height={300}
-                    className="rounded shadow-md object-contain max-h-60 w-full"
-                  />
-                </a>
-              ) : (
-                <p className="text-sm text-gray-600">No transfer proof yet</p>
-              )}
-            </CardContent>
-          </Card>
+          {[
+            { icon: Hash,        label: "ID Transaksi",      value: <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-sm">{transaction?.id}</span> },
+            { icon: UserPlus,    label: "Karyawan",          value: transaction?.users?.name ?? "-" },
+            { icon: Building,    label: "PT",                value: transaction?.pt },
+            { icon: ShieldCheck, label: "Divisi",            value: transaction?.divisi },
+            { icon: Contact,     label: "Kontak Darurat",    value: `${transaction?.emergencyName} (${transaction?.emergencyPhone})` },
+            { icon: CreditCard,  label: "Total",             value: <span className="font-bold text-[#263C7D]">Rp {transaction?.total?.toLocaleString("id-ID")}</span> },
+            { icon: CalendarDays,label: "Tanggal",           value: transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString("id-ID") : "-" },
+          ].map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-start gap-3">
+              <Icon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+              <span className="text-sm text-gray-500 w-36 flex-shrink-0">{label}</span>
+              <span className="text-sm text-gray-800">{value}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Participants Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Participants</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>#</TableHead>
-                  <TableHead>First Name</TableHead>
-                  <TableHead>Last Name</TableHead>
-                  <TableHead>Umur</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transaction?.participants.map((p, index) => (
-                  <TableRow key={p.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{p.fname}</TableCell>
-                    <TableCell>{p.lname}</TableCell>
-                    <TableCell>{p.umur}</TableCell>
-                    <TableCell>{p.email}</TableCell>
-                    <TableCell>{p.phone}</TableCell>
-                    <TableCell>{p.master_category?.name}</TableCell>
-                    <TableCell>{p.size}</TableCell>
-                    <TableCell>Rp {p.price.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialogDeleteOpen(p.id.toString())}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        {/* Transfer proof */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-3">
+          <h2 className="font-semibold text-gray-800 border-b pb-3">Bukti Transfer</h2>
+          {transaction?.transferProof && transaction.transferProof !== "-" ? (
+            <a href={transaction.transferProof} target="_blank" rel="noopener noreferrer" className="block group">
+              <div className="relative rounded-xl overflow-hidden border border-gray-100">
+                <Image
+                  src={transaction.transferProof}
+                  alt="Bukti Transfer"
+                  width={500}
+                  height={400}
+                  className="w-full object-contain max-h-64 group-hover:opacity-90 transition-opacity"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
+                  <span className="text-white text-xs font-medium bg-black/50 px-3 py-1 rounded-full">Lihat penuh</span>
+                </div>
+              </div>
+            </a>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl py-10">
+              <CreditCard className="w-8 h-8" />
+              <p className="text-sm">Belum ada bukti transfer</p>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Participants */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <h2 className="font-semibold text-gray-800 mb-4">Peserta <span className="text-gray-400 font-normal text-sm">({transaction?.participants?.length ?? 0})</span></h2>
+        <div className="overflow-x-auto rounded-xl border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50 text-xs">
+                <TableHead className="w-10">#</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Umur</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Telepon</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead className="text-center">Jersey</TableHead>
+                <TableHead className="text-right">Harga</TableHead>
+                <TableHead className="text-center">Check-in</TableHead>
+                <TableHead className="text-center">Race Pack</TableHead>
+                <TableHead className="w-10" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {transaction?.participants?.map((p, index) => (
+                <TableRow key={p.id} className="even:bg-gray-50 text-sm">
+                  <TableCell className="text-gray-400">{index + 1}</TableCell>
+                  <TableCell>
+                    <p className="font-medium text-gray-800">{p.fname} {p.lname}</p>
+                    <p className="text-xs text-gray-400">{p.bibname}</p>
+                  </TableCell>
+                  <TableCell>{p.umur}</TableCell>
+                  <TableCell className="text-gray-500">{p.email}</TableCell>
+                  <TableCell className="text-gray-500">{p.phone}</TableCell>
+                  <TableCell>{p.master_category?.name ?? "-"}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">{p.size}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-medium">Rp {Number(p.price).toLocaleString("id-ID")}</TableCell>
+                  <TableCell className="text-center">
+                    {p.registration
+                      ? <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Ya</Badge>
+                      : <Badge className="bg-gray-100 text-gray-500 hover:bg-gray-100">Belum</Badge>}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {p.racePack
+                      ? <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Diambil</Badge>
+                      : <Badge className="bg-gray-100 text-gray-500 hover:bg-gray-100">Belum</Badge>}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => { setParticipantId(p.id.toString()); setIsDialogDeleteOpen(true); }}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
   );
 };
 

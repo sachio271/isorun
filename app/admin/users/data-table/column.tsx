@@ -4,19 +4,11 @@ import { UserResponse } from "@/types/response/userResponse"
 import { ColumnDef } from "@tanstack/react-table"
 import { CellAction } from "./cell-action"
 
-
 export const columns: ColumnDef<UserResponse>[] = [
   {
     accessorKey: "#",
     header: "#",
-    cell: ({ row }) => {
-      const index = row.index + 1;
-      return (
-        <div className="text-center">
-                {index}
-            </div>
-        )
-    }
+    cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
   },
   {
     accessorKey: "username",
@@ -40,7 +32,6 @@ export const columns: ColumnDef<UserResponse>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => 
-      <CellAction user={row.original} />
+    cell: ({ row }) => <CellAction user={row.original} />,
   },
 ]

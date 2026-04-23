@@ -4,95 +4,91 @@ import AddUserDialog from "@/components/addUserDialog";
 import { useLoading } from "@/components/loadingContext";
 import { showToast } from "@/components/toast-notification";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { addUser, getAllUserRef } from "@/lib/api/userApi";
-import { UsersRef } from "@/types/response/userResponse";
+import { addUser, getAllUserRefPaginated } from "@/lib/api/userApi";
+import { PaginationMeta, UsersRef } from "@/types/response/userResponse";
+import { UserPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { columns } from "./data-table/column";
 import { DataTable } from "./data-table/data-table";
 
-export default function Users() {
-    const {data: session} = useSession()
-    const {showLoading, hideLoading} = useLoading()
-    const [dataUsers, setDataUsers] = useState<UsersRef[]>([])
-    const [user, setUser] = useState<UsersRef | undefined>(undefined)
-    const [dialogOpen, setDialogOpen] = useState(false)
-    useEffect(() => {
-        fetchDataUser()
-    }, [session])
-    
-    const fetchDataUser = async () => {
-        if(!session?.accessToken) return
-        showLoading()
+const DEFAULT_META: PaginationMeta = { totalItems: 0, itemsPerPage: 10, totalPages: 1, currentPage: 1 };
+
+export default function ReferencePage() {
+    const { data: session } = useSession();
+    const { showLoading, hideLoading } = useLoading();
+    const [dataUsers, setDataUsers] = useState<UsersRef[]>([]);
+    const [meta, setMeta] = useState<PaginationMeta>(DEFAULT_META);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [editUser, setEditUser] = useState<UsersRef | undefined>(undefined);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const fetchDataUser = async (p: number, s: string) => {
+        if (!session?.accessToken) return;
+        setIsLoading(true);
         try {
-            const trx = await getAllUserRef(session.accessToken)
-            setDataUsers(trx)
-            console.log(trx)   
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            showToast({
-                type: "error",
-                title: "Data Fetch Error",
-                description: "Failed to fetch data",
-            });
+            const res = await getAllUserRefPaginated(session.accessToken, { page: p, limit: 10, search: s });
+            setDataUsers(res.data);
+            setMeta(res.meta);
+        } catch {
+            showToast({ type: "error", title: "Gagal", description: "Tidak dapat memuat data referensi." });
         }
-        hideLoading()
-    }
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchDataUser(page, search);
+    }, [session, page, search]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handlePageChange = (newPage: number) => setPage(newPage);
+    const handleSearchChange = (s: string) => { setSearch(s); setPage(1); };
+    const handleEdit = (user: UsersRef) => { setEditUser(user); setDialogOpen(true); };
+    const handleOpenAdd = () => { setEditUser(undefined); setDialogOpen(true); };
 
     const handleAddUser = async (formData: FormData) => {
-        if(!session?.accessToken) return
-        showLoading()
+        if (!session?.accessToken) return;
+        showLoading();
         try {
-            await addUser(session.accessToken, formData)
-            setDialogOpen(false)
-            fetchDataUser()
-            showToast({
-                type: "success",
-                title: "Success",
-                description: "User added successfully",
-            });
-        } catch (error) {
-            console.error("Error adding user:", error);
-            showToast({
-                type: "error",
-                title: "User Add Error",
-                description: "Failed to add user",
-            });
+            await addUser(session.accessToken, formData);
+            setDialogOpen(false);
+            fetchDataUser(page, search);
+            showToast({ type: "success", title: "Berhasil", description: "Data pengguna berhasil disimpan." });
+        } catch {
+            showToast({ type: "error", title: "Gagal", description: "Tidak dapat menyimpan data pengguna." });
         }
-        hideLoading()
-    }
-
-    const handleEdit = (user: UsersRef) => {
-        setUser(user);
-        setDialogOpen(true);
+        hideLoading();
     };
-      
+
     return (
         <>
             <AddUserDialog
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
                 onAdd={handleAddUser}
-                data={user ? { user } : undefined}
+                data={editUser ? { user: editUser } : undefined}
             />
-            <Card>
-                <CardHeader>
-                    <CardTitle>
-                        <div className="flex items-center justify-between">
-                            <h1 className="text-lg font-semibold">Users Reference Data</h1>
-                            <Button variant="outline" onClick={() => setDialogOpen(true)}>
-                                Add User
-                            </Button>
-                        </div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="w-full overflow-x-auto px-2 sm:px-4 md:px-6">
-                    <div className="w-full overflow-x-auto">
-                        <DataTable columns={columns(handleEdit)} data={dataUsers} />
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-800">Data Referensi Pengguna</h1>
+                        <p className="text-sm text-gray-400 mt-0.5">{meta.totalItems.toLocaleString("id-ID")} data terdaftar</p>
                     </div>
-                </CardContent>
-            </Card>
+                    <Button onClick={handleOpenAdd} className="bg-[#263C7D] hover:bg-[#1e2f61] gap-2 cursor-pointer">
+                        <UserPlus className="w-4 h-4" /> Tambah Data
+                    </Button>
+                </div>
+
+                <DataTable
+                    data={dataUsers}
+                    meta={meta}
+                    onPageChange={handlePageChange}
+                    onSearchChange={handleSearchChange}
+                    onEdit={handleEdit}
+                    isLoading={isLoading}
+                />
+            </div>
         </>
     );
 }

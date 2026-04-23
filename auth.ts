@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./lib/zod";
-const BACKEND_URL = 'https://isoplusrun.wingssurya.com/apis'
-// const BACKEND_URL = 'http://localhost:8000/api'
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000/api";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
@@ -12,9 +11,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       authorize: async (credentials) => {
         const validatedField = LoginSchema.safeParse(credentials);
-        
-        if(!validatedField.success) {
-            return null
+
+        if (!validatedField.success) {
+          return null;
         }
 
         const { username, password } = validatedField.data;
@@ -34,9 +33,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const data = await res.json();
           return {
             id: data.user.id,
+            email: data.user.email ?? "",
             username: data.user.username,
             name: data.user.name,
-            emailVerified: null, // not available in backend
+            emailVerified: null,
             role: data.user.role,
             accessToken: data.accessToken,
             expiresIn: data.expiresIn,
@@ -44,7 +44,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } catch (error) {
           console.error("Error during login:", error);
           return null;
-          
         }
       },
     }),
@@ -53,21 +52,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // authorized({ auth, request: { nextUrl } }) {
     //   const isLoggedIn = !!auth?.user;
     //   const isAdminRoute = nextUrl.pathname.startsWith("/admin");
-    
+
     //   if (!isLoggedIn) {
     //     return Response.redirect(new URL("/login", nextUrl));
     //   }
-    
+
     //   if (isLoggedIn && isAdminRoute && auth.user?.role !== "admin") {
     //     return Response.redirect(new URL("/unauthorized", nextUrl)); // or home page
     //   }
-    
+
     //   if (isLoggedIn && nextUrl.pathname === "/login") {
     //     return Response.redirect(new URL("/findwork", nextUrl));
     //   }
-    
+
     //   return true;
-    // },    
+    // },
 
     async jwt({ token, user }) {
       if (user) {
@@ -75,8 +74,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           username?: string;
           role?: string;
           name?: string;
+          accessToken?: string;
+          expiresIn?: string;
         };
-    
+
         token.user = {
           id: u.id || "0",
           username: u.username || "",
@@ -84,8 +85,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           emailVerified: null,
           role: u.role || "user",
         };
-        token.accessToken = u.accessToken;
-        token.expiresIn = u.expiresIn;
+        token.accessToken = u.accessToken ?? "";
+        token.expiresIn = u.expiresIn ?? "";
       }
       return token;
     },
@@ -97,4 +98,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-})
+});

@@ -1,9 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  // baseURL: "http://localhost:8000/api",
-  
-  baseURL: "https://isoplusrun.wingssurya.com/apis",
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },
