@@ -1,0 +1,72 @@
+name: Deploy Next.js Frontend
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # --- 1. BUILD NEXT.JS ---
+      - name: Install dependencies & Build
+        run: |
+          npm ci
+          npm run build
+
+      # --- 2. (OPTIONAL) GENERATE FRONTEND .ENV ---
+      # If your Next.js app needs variables (like NEXT_PUBLIC_API_URL), uncomment this.
+      # Create a SECRET_ENV_FRONTEND in GitHub Secrets with your env variables.
+      - name: Create .env file
+        env:
+          SECRET_ENV_FRONTEND: ${{ secrets.SECRET_ENV_FRONTEND }}
+        run: |
+          echo "$SECRET_ENV_FRONTEND" > .env
+
+      # --- 3. COPY FILES TO SERVER ---
+      - name: Copy files to Server via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Next.js needs the .next build folder, public assets, and package.json.
+          # Add '.env' to this list if you uncommented step 2.
+          source: ".next, public, package.json"
+          target: "/var/www/frontend"
+
+      # --- 4. SSH AND DEPLOY ---
+      - name: SSH into Server and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Load environment paths (fixes 'npm not found' error)
+            source ~/.profile || true
+            source ~/.bashrc || true
+            export PATH=$PATH:/usr/local/bin:/usr/bin
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            # Go to the frontend directory
+            cd /var/www/frontend
+
+            # Install production dependencies only
+            npm install --omit=dev
+
+            # Start or restart Next.js in PM2
+            # We tell PM2 to run 'npm start' and name the process "frontend"
+            pm2 restart frontend || pm2 start npm --name "frontend" -- start
+
+            # Save the PM2 process list
+            pm2 save
