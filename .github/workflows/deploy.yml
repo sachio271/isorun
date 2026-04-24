@@ -38,9 +38,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Next.js needs the .next build folder, public assets, and package.json.
-          # Add '.env' to this list if you uncommented step 2.
-          source: ".next, public, package.json"
+          source: ".next, public, package.json, .env"
           target: "/var/www/frontend"
 
       # --- 4. SSH AND DEPLOY ---
