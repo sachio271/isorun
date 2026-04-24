@@ -23,13 +23,11 @@ jobs:
           npm run build
 
       # --- 2. (OPTIONAL) GENERATE FRONTEND .ENV ---
-      # If your Next.js app needs variables (like NEXT_PUBLIC_API_URL), uncomment this.
-      # Create a SECRET_ENV_FRONTEND in GitHub Secrets with your env variables.
       - name: Create .env file
         env:
-          SECRET_ENV_FRONTEND: ${{ secrets.SECRET_ENV_FRONTEND }}
+          SECRET_ENV: ${{ secrets.SECRET_ENV }}
         run: |
-          echo "$SECRET_ENV_FRONTEND" > .env
+          echo "$SECRET_ENV" > .env
 
       # --- 3. COPY FILES TO SERVER ---
       - name: Copy files to Server via SCP
