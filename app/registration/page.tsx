@@ -117,7 +117,9 @@ export default function RegistrationPage() {
   const [isDialogConfirmOpen, setDialogConfirmOpen] = useState(false);
   const [isDialogConfirmUploadOpen, setDialogConfirmUploadOpen] =
     useState(false);
-  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
+  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(
+    null,
+  );
 
   const handleCancelUpload = () => setDialogConfirmUploadOpen(false);
 
@@ -369,7 +371,7 @@ export default function RegistrationPage() {
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: "url('/banner.webp')" }}
+      style={{ backgroundImage: "url('/banner 2.webp')" }}
     >
       <div className="min-h-screen bg-white/60 backdrop-blur-sm">
         <Header />
@@ -425,524 +427,543 @@ export default function RegistrationPage() {
               <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
                 <ShieldCheck className="w-8 h-8 text-red-400" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">Pendaftaran Ditutup</h2>
+              <h2 className="text-xl font-bold text-gray-800">
+                Pendaftaran Ditutup
+              </h2>
               <p className="text-gray-500 max-w-sm text-sm">
-                Pendaftaran sedang tidak dibuka. Silakan hubungi admin untuk informasi lebih lanjut.
+                Pendaftaran sedang tidak dibuka. Silakan hubungi admin untuk
+                informasi lebih lanjut.
               </p>
             </div>
           ) : (
             <>
-          <StepIndicator active={activeTab} />
+              <StepIndicator active={activeTab} />
 
-          <Tabs value={activeTab}>
-            {/* ── STEP 1: Register ── */}
-            <TabsContent value="register">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-8">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-1">
-                    Informasi Umum
-                  </h2>
-                  <p className="text-sm text-gray-400">
-                    Isi data PT, divisi, dan kontak darurat.
-                  </p>
-                </div>
+              <Tabs value={activeTab}>
+                {/* ── STEP 1: Register ── */}
+                <TabsContent value="register">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-8">
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                        Informasi Umum
+                      </h2>
+                      <p className="text-sm text-gray-400">
+                        Isi data PT, divisi, dan kontak darurat.
+                      </p>
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <Label
-                      htmlFor="pt"
-                      className="flex items-center gap-1.5 text-sm font-medium"
-                    >
-                      <Building className="w-3.5 h-3.5 text-[#263C7D]" /> PT
-                    </Label>
-                    <Input
-                      id="pt"
-                      placeholder="Wings Surya"
-                      value={transactionForm.pt}
-                      onChange={(e) =>
-                        setTransactionForm({
-                          ...transactionForm,
-                          pt: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label
-                      htmlFor="divisi"
-                      className="flex items-center gap-1.5 text-sm font-medium"
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#263C7D]" />{" "}
-                      Divisi
-                    </Label>
-                    <Input
-                      id="divisi"
-                      placeholder="HRD"
-                      value={transactionForm.divisi}
-                      onChange={(e) =>
-                        setTransactionForm({
-                          ...transactionForm,
-                          divisi: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label
-                      htmlFor="emergencyName"
-                      className="flex items-center gap-1.5 text-sm font-medium"
-                    >
-                      <Contact className="w-3.5 h-3.5 text-[#263C7D]" /> Nama
-                      Kontak Darurat
-                    </Label>
-                    <Input
-                      id="emergencyName"
-                      placeholder="Jane Doe"
-                      value={transactionForm.emergencyName}
-                      onChange={(e) =>
-                        setTransactionForm({
-                          ...transactionForm,
-                          emergencyName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label
-                      htmlFor="emergencyPhone"
-                      className="flex items-center gap-1.5 text-sm font-medium"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5 text-[#263C7D]" /> No.
-                      Telepon Darurat
-                    </Label>
-                    <Input
-                      id="emergencyPhone"
-                      placeholder="08xxxxxxxxxx"
-                      value={transactionForm.emergencyPhone}
-                      onChange={(e) =>
-                        setTransactionForm({
-                          ...transactionForm,
-                          emergencyPhone: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="pt"
+                          className="flex items-center gap-1.5 text-sm font-medium"
+                        >
+                          <Building className="w-3.5 h-3.5 text-[#263C7D]" /> PT
+                        </Label>
+                        <Input
+                          id="pt"
+                          placeholder="Wings Surya"
+                          value={transactionForm.pt}
+                          onChange={(e) =>
+                            setTransactionForm({
+                              ...transactionForm,
+                              pt: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="divisi"
+                          className="flex items-center gap-1.5 text-sm font-medium"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#263C7D]" />{" "}
+                          Divisi
+                        </Label>
+                        <Input
+                          id="divisi"
+                          placeholder="HRD"
+                          value={transactionForm.divisi}
+                          onChange={(e) =>
+                            setTransactionForm({
+                              ...transactionForm,
+                              divisi: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="emergencyName"
+                          className="flex items-center gap-1.5 text-sm font-medium"
+                        >
+                          <Contact className="w-3.5 h-3.5 text-[#263C7D]" />{" "}
+                          Nama Kontak Darurat
+                        </Label>
+                        <Input
+                          id="emergencyName"
+                          placeholder="Jane Doe"
+                          value={transactionForm.emergencyName}
+                          onChange={(e) =>
+                            setTransactionForm({
+                              ...transactionForm,
+                              emergencyName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="emergencyPhone"
+                          className="flex items-center gap-1.5 text-sm font-medium"
+                        >
+                          <PhoneCall className="w-3.5 h-3.5 text-[#263C7D]" />{" "}
+                          No. Telepon Darurat
+                        </Label>
+                        <Input
+                          id="emergencyPhone"
+                          placeholder="08xxxxxxxxxx"
+                          value={transactionForm.emergencyPhone}
+                          onChange={(e) =>
+                            setTransactionForm({
+                              ...transactionForm,
+                              emergencyPhone: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
 
-                <div className="border-t pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                      Daftar Peserta
-                    </h2>
+                    <div className="border-t pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800">
+                          Daftar Peserta
+                        </h2>
+                        <Button
+                          onClick={() => setDialogOpen(true)}
+                          className="bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-lg gap-2 cursor-pointer"
+                        >
+                          <UserPlus className="w-4 h-4" /> Tambah Peserta
+                        </Button>
+                      </div>
+
+                      {participants.length === 0 ? (
+                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                          <UserPlus className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400">
+                            Belum ada peserta. Klik tombol di atas untuk
+                            menambah.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border overflow-hidden">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-gray-50">
+                                <TableHead>Peserta</TableHead>
+                                <TableHead>Kategori</TableHead>
+                                <TableHead>Harga</TableHead>
+                                <TableHead className="w-12" />
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {participants.map((p, idx) => (
+                                <TableRow key={idx}>
+                                  <TableCell className="font-medium">
+                                    {p.fname} {p.lname}
+                                  </TableCell>
+                                  <TableCell>{p.categoryName || "-"}</TableCell>
+                                  <TableCell>
+                                    Rp {p.categoryPrice.toLocaleString("id-ID")}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() =>
+                                        handleDeleteParticipant(idx)
+                                      }
+                                      className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash className="w-4 h-4" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                              <TableRow className="bg-blue-50">
+                                <TableCell
+                                  colSpan={2}
+                                  className="font-bold text-gray-700"
+                                >
+                                  Total
+                                </TableCell>
+                                <TableCell className="font-bold text-[#263C7D]">
+                                  Rp {getTotal().toLocaleString("id-ID")}
+                                </TableCell>
+                                <TableCell />
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </div>
+
                     <Button
-                      onClick={() => setDialogOpen(true)}
-                      className="bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-lg gap-2 cursor-pointer"
+                      onClick={() => setDialogConfirmOpen(true)}
+                      className="w-full bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-xl py-6 text-base font-semibold cursor-pointer"
                     >
-                      <UserPlus className="w-4 h-4" /> Tambah Peserta
+                      Submit &amp; Lanjutkan →
                     </Button>
                   </div>
+                </TabsContent>
 
-                  {participants.length === 0 ? (
-                    <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                      <UserPlus className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                      <p className="text-sm text-gray-400">
-                        Belum ada peserta. Klik tombol di atas untuk menambah.
-                      </p>
+                {/* ── STEP 2: Waiting confirmation ── */}
+                <TabsContent value="confirmation">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-yellow-50 flex items-center justify-center">
+                      <ClipboardList className="w-8 h-8 text-yellow-500" />
                     </div>
-                  ) : (
-                    <div className="rounded-xl border overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50">
-                            <TableHead>Peserta</TableHead>
-                            <TableHead>Kategori</TableHead>
-                            <TableHead>Harga</TableHead>
-                            <TableHead className="w-12" />
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {participants.map((p, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell className="font-medium">
-                                {p.fname} {p.lname}
+                    <h2 className="text-xl font-bold text-gray-800">
+                      Menunggu Verifikasi Admin
+                    </h2>
+                    <p className="text-gray-500 max-w-sm text-sm">
+                      Data registrasi Anda sedang diperiksa oleh admin. Silakan
+                      tunggu konfirmasi. Jika ada pertanyaan, hubungi admin.
+                    </p>
+                  </div>
+                </TabsContent>
+
+                {/* ── STEP 3: Payment / Invoice ── */}
+                <TabsContent value="invoice">
+                  <div className="space-y-5">
+                    {/* Invoice detail */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <CreditCard className="w-5 h-5 text-[#263C7D]" /> Detail
+                        Pembayaran
+                      </h2>
+                      <div className="rounded-xl border overflow-hidden mb-5">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-gray-50">
+                              <TableHead>Peserta</TableHead>
+                              <TableHead>Kategori</TableHead>
+                              <TableHead className="text-right">
+                                Harga
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {transaction?.participants?.map((p, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell className="font-medium">
+                                  {p.fname} {p.lname}
+                                </TableCell>
+                                <TableCell>
+                                  {p.master_category?.name || "-"}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  Rp {p.price?.toLocaleString()}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                            <TableRow className="bg-blue-50">
+                              <TableCell
+                                colSpan={2}
+                                className="font-bold text-gray-700"
+                              >
+                                Total
                               </TableCell>
-                              <TableCell>{p.categoryName || "-"}</TableCell>
-                              <TableCell>
-                                Rp {p.categoryPrice.toLocaleString("id-ID")}
-                              </TableCell>
-                              <TableCell>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDeleteParticipant(idx)}
-                                  className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                                >
-                                  <Trash className="w-4 h-4" />
-                                </Button>
+                              <TableCell className="text-right font-bold text-[#263C7D]">
+                                Rp {transaction?.total?.toLocaleString("id-ID")}
                               </TableCell>
                             </TableRow>
-                          ))}
-                          <TableRow className="bg-blue-50">
-                            <TableCell
-                              colSpan={2}
-                              className="font-bold text-gray-700"
-                            >
-                              Total
-                            </TableCell>
-                            <TableCell className="font-bold text-[#263C7D]">
-                              Rp {getTotal().toLocaleString("id-ID")}
-                            </TableCell>
-                            <TableCell />
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </div>
-                  )}
-                </div>
-
-                <Button
-                  onClick={() => setDialogConfirmOpen(true)}
-                  className="w-full bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-xl py-6 text-base font-semibold cursor-pointer"
-                >
-                  Submit &amp; Lanjutkan →
-                </Button>
-              </div>
-            </TabsContent>
-
-            {/* ── STEP 2: Waiting confirmation ── */}
-            <TabsContent value="confirmation">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-yellow-50 flex items-center justify-center">
-                  <ClipboardList className="w-8 h-8 text-yellow-500" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-800">
-                  Menunggu Verifikasi Admin
-                </h2>
-                <p className="text-gray-500 max-w-sm text-sm">
-                  Data registrasi Anda sedang diperiksa oleh admin. Silakan
-                  tunggu konfirmasi. Jika ada pertanyaan, hubungi admin.
-                </p>
-              </div>
-            </TabsContent>
-
-            {/* ── STEP 3: Payment / Invoice ── */}
-            <TabsContent value="invoice">
-              <div className="space-y-5">
-                {/* Invoice detail */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-[#263C7D]" /> Detail
-                    Pembayaran
-                  </h2>
-                  <div className="rounded-xl border overflow-hidden mb-5">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-gray-50">
-                          <TableHead>Peserta</TableHead>
-                          <TableHead>Kategori</TableHead>
-                          <TableHead className="text-right">Harga</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {transaction?.participants?.map((p, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className="font-medium">
-                              {p.fname} {p.lname}
-                            </TableCell>
-                            <TableCell>
-                              {p.master_category?.name || "-"}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              Rp {p.price?.toLocaleString()}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        <TableRow className="bg-blue-50">
-                          <TableCell
-                            colSpan={2}
-                            className="font-bold text-gray-700"
-                          >
-                            Total
-                          </TableCell>
-                          <TableCell className="text-right font-bold text-[#263C7D]">
-                            Rp {transaction?.total?.toLocaleString("id-ID")}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  {/* Bank info */}
-                  <div className="bg-[#263C7D]/5 border border-[#263C7D]/20 rounded-xl p-5 space-y-2">
-                    <p className="text-sm font-semibold text-[#263C7D] mb-3">
-                      Transfer ke rekening berikut:
-                    </p>
-                    <div className="grid grid-cols-2 gap-y-1 text-sm text-gray-700">
-                      <span className="text-gray-400">Bank</span>
-                      <span className="font-medium">BRI</span>
-                      <span className="text-gray-400">No. Rekening</span>
-                      <span className="font-mono font-semibold tracking-wide">
-                        115601000191306
-                      </span>
-                      <span className="text-gray-400">Atas Nama</span>
-                      <span className="font-medium">PT. WINGS SURYA</span>
-                      <span className="text-gray-400">Jumlah</span>
-                      <span className="font-bold text-[#263C7D]">
-                        Rp {transaction?.total?.toLocaleString("id-ID")}
-                      </span>
-                    </div>
-                  </div>
-
-                  <p className="mt-4 text-xs text-red-500">
-                    * Upload bukti transfer sebagai gambar (JPEG/PNG, maks 2MB).
-                    Pastikan gambar jelas agar admin dapat memverifikasi dengan
-                    cepat.
-                  </p>
-                </div>
-
-                {/* Upload */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-4">
-                  <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Upload className="w-5 h-5 text-[#263C7D]" /> Upload Bukti
-                    Transfer
-                  </h2>
-                  <label
-                    htmlFor="proof"
-                    className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
-                  >
-                    <Upload className="w-7 h-7 text-gray-300 mb-2" />
-                    <span className="text-sm text-gray-400">
-                      {image ? image.name : "Klik untuk memilih file"}
-                    </span>
-                    <Input
-                      id="proof"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
-                  <Button
-                    onClick={() => setDialogConfirmUploadOpen(true)}
-                    className="w-full bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-xl py-5 text-base font-semibold cursor-pointer"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <Loader2 className="animate-spin w-5 h-5" />
-                    ) : (
-                      "Kirim Bukti Transfer"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* ── STEP 4: Waiting payment confirmation ── */}
-            <TabsContent value="payment">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
-                  <ShieldCheck className="w-8 h-8 text-blue-500" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-800">
-                  Menunggu Konfirmasi Pembayaran
-                </h2>
-                <p className="text-gray-500 max-w-sm text-sm">
-                  Bukti transfer Anda sedang diperiksa oleh admin. Silakan
-                  tunggu konfirmasi. Jika ada pertanyaan, hubungi admin.
-                </p>
-              </div>
-            </TabsContent>
-
-            {/* ── STEP 5: Recap ── */}
-            <TabsContent value="recap">
-              <div className="space-y-5">
-                {/* Success banner */}
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold text-green-800">
-                      Pendaftaran Berhasil!
-                    </h2>
-                    <p className="text-sm text-green-600">
-                      Tunjukan kode QR kepada panitia saat check-in di hari H.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Detail & stats */}
-                <div className="grid md:grid-cols-3 gap-5">
-                  <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                    <h3 className="font-semibold text-gray-800 border-b pb-2">
-                      Detail Registrasi
-                    </h3>
-                    {[
-                      {
-                        icon: Hash,
-                        label: "ID Registrasi",
-                        value: (
-                          <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-sm">
-                            {transaction?.id}
-                          </span>
-                        ),
-                      },
-                      { icon: Building, label: "PT", value: transaction?.pt },
-                      {
-                        icon: ShieldCheck,
-                        label: "Divisi",
-                        value: transaction?.divisi,
-                      },
-                      {
-                        icon: Contact,
-                        label: "Kontak Darurat",
-                        value: `${transaction?.emergencyName} (${transaction?.emergencyPhone})`,
-                      },
-                    ].map(({ icon: Icon, label, value }) => (
-                      <div key={label} className="flex items-start gap-3">
-                        <Icon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-500 w-36 flex-shrink-0">
-                          {label}
-                        </span>
-                        <span className="text-sm text-gray-800">{value}</span>
+                          </TableBody>
+                        </Table>
                       </div>
-                    ))}
-                    <div className="bg-blue-50 rounded-xl p-4 text-center mt-4">
-                      <p className="text-xs text-blue-500 mb-1">
-                        Total Pembayaran
+
+                      {/* Bank info */}
+                      <div className="bg-[#263C7D]/5 border border-[#263C7D]/20 rounded-xl p-5 space-y-2">
+                        <p className="text-sm font-semibold text-[#263C7D] mb-3">
+                          Transfer ke rekening berikut:
+                        </p>
+                        <div className="grid grid-cols-2 gap-y-1 text-sm text-gray-700">
+                          <span className="text-gray-400">Bank</span>
+                          <span className="font-medium">BRI</span>
+                          <span className="text-gray-400">No. Rekening</span>
+                          <span className="font-mono font-semibold tracking-wide">
+                            115601000191306
+                          </span>
+                          <span className="text-gray-400">Atas Nama</span>
+                          <span className="font-medium">PT. WINGS SURYA</span>
+                          <span className="text-gray-400">Jumlah</span>
+                          <span className="font-bold text-[#263C7D]">
+                            Rp {transaction?.total?.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="mt-4 text-xs text-red-500">
+                        * Upload bukti transfer sebagai gambar (JPEG/PNG, maks
+                        2MB). Pastikan gambar jelas agar admin dapat
+                        memverifikasi dengan cepat.
                       </p>
-                      <p className="text-2xl font-bold text-[#263C7D]">
-                        Rp {transaction?.total?.toLocaleString("id-ID")}
-                      </p>
+                    </div>
+
+                    {/* Upload */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-4">
+                      <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <Upload className="w-5 h-5 text-[#263C7D]" /> Upload
+                        Bukti Transfer
+                      </h2>
+                      <label
+                        htmlFor="proof"
+                        className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition"
+                      >
+                        <Upload className="w-7 h-7 text-gray-300 mb-2" />
+                        <span className="text-sm text-gray-400">
+                          {image ? image.name : "Klik untuk memilih file"}
+                        </span>
+                        <Input
+                          id="proof"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                      </label>
+                      <Button
+                        onClick={() => setDialogConfirmUploadOpen(true)}
+                        className="w-full bg-[#263C7D] hover:bg-[#1e2f61] text-white rounded-xl py-5 text-base font-semibold cursor-pointer"
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <Loader2 className="animate-spin w-5 h-5" />
+                        ) : (
+                          "Kirim Bukti Transfer"
+                        )}
+                      </Button>
                     </div>
                   </div>
+                </TabsContent>
 
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-                    <h3 className="font-semibold text-gray-800 text-center">
-                      Status
-                    </h3>
-                    <div className="bg-blue-50 rounded-xl p-4 text-center">
-                      <p className="text-xs text-blue-500 mb-1">
-                        Peserta Terdaftar
-                      </p>
-                      <p className="text-3xl font-bold text-blue-900">
-                        {registeredCount}
-                        <span className="text-lg text-gray-400 font-medium">
-                          {" "}
-                          / {totalParticipants}
-                        </span>
-                      </p>
+                {/* ── STEP 4: Waiting payment confirmation ── */}
+                <TabsContent value="payment">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center">
+                      <ShieldCheck className="w-8 h-8 text-blue-500" />
                     </div>
-                    <div className="bg-green-50 rounded-xl p-4 text-center">
-                      <p className="text-xs text-green-500 mb-1">
-                        Race Pack Diambil
-                      </p>
-                      <p className="text-3xl font-bold text-green-900">
-                        {racePackTakenCount}
-                        <span className="text-lg text-gray-400 font-medium">
-                          {" "}
-                          / {totalParticipants}
-                        </span>
-                      </p>
-                    </div>
-                    <p className="text-xs text-gray-400 text-center">
-                      Tunjukan halaman ini saat pengambilan race pack.
+                    <h2 className="text-xl font-bold text-gray-800">
+                      Menunggu Konfirmasi Pembayaran
+                    </h2>
+                    <p className="text-gray-500 max-w-sm text-sm">
+                      Bukti transfer Anda sedang diperiksa oleh admin. Silakan
+                      tunggu konfirmasi. Jika ada pertanyaan, hubungi admin.
                     </p>
                   </div>
-                </div>
+                </TabsContent>
 
-                {/* Participants table */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                  <h3 className="font-semibold text-gray-800 mb-4">
-                    Detail Peserta
-                  </h3>
-                  <div className="overflow-x-auto rounded-xl border">
-                    <Table className="min-w-[700px]">
-                      <TableHeader>
-                        <TableRow className="bg-gray-50">
-                          <TableHead className="w-10">#</TableHead>
-                          <TableHead>Nama</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Kategori</TableHead>
-                          <TableHead className="text-center">Jersey</TableHead>
-                          <TableHead className="text-right">Biaya</TableHead>
-                          <TableHead className="text-center">QR</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {transaction?.participants?.map((p, index) => (
-                          <TableRow key={p.id} className="even:bg-gray-50">
-                            <TableCell className="text-gray-400">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {p.fname} {p.lname}
-                            </TableCell>
-                            <TableCell className="text-gray-500">
-                              {p.email}
-                            </TableCell>
-                            <TableCell>{p.master_category?.name}</TableCell>
-                            <TableCell className="text-center">
-                              <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-semibold">
-                                {p.size}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              Rp {p.price?.toLocaleString()}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-1.5 cursor-pointer"
-                                onClick={() => {
-                                  setSelectedParticipant(p);
-                                  setIsQrModalOpen(true);
-                                }}
-                              >
-                                <QrCode className="w-4 h-4" /> Tampilkan
-                              </Button>
-                            </TableCell>
-                          </TableRow>
+                {/* ── STEP 5: Recap ── */}
+                <TabsContent value="recap">
+                  <div className="space-y-5">
+                    {/* Success banner */}
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                        <Check className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold text-green-800">
+                          Pendaftaran Berhasil!
+                        </h2>
+                        <p className="text-sm text-green-600">
+                          Tunjukan kode QR kepada panitia saat check-in di hari
+                          H.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Detail & stats */}
+                    <div className="grid md:grid-cols-3 gap-5">
+                      <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                        <h3 className="font-semibold text-gray-800 border-b pb-2">
+                          Detail Registrasi
+                        </h3>
+                        {[
+                          {
+                            icon: Hash,
+                            label: "ID Registrasi",
+                            value: (
+                              <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-sm">
+                                {transaction?.id}
+                              </span>
+                            ),
+                          },
+                          {
+                            icon: Building,
+                            label: "PT",
+                            value: transaction?.pt,
+                          },
+                          {
+                            icon: ShieldCheck,
+                            label: "Divisi",
+                            value: transaction?.divisi,
+                          },
+                          {
+                            icon: Contact,
+                            label: "Kontak Darurat",
+                            value: `${transaction?.emergencyName} (${transaction?.emergencyPhone})`,
+                          },
+                        ].map(({ icon: Icon, label, value }) => (
+                          <div key={label} className="flex items-start gap-3">
+                            <Icon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-gray-500 w-36 flex-shrink-0">
+                              {label}
+                            </span>
+                            <span className="text-sm text-gray-800">
+                              {value}
+                            </span>
+                          </div>
                         ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
-              </div>
+                        <div className="bg-blue-50 rounded-xl p-4 text-center mt-4">
+                          <p className="text-xs text-blue-500 mb-1">
+                            Total Pembayaran
+                          </p>
+                          <p className="text-2xl font-bold text-[#263C7D]">
+                            Rp {transaction?.total?.toLocaleString("id-ID")}
+                          </p>
+                        </div>
+                      </div>
 
-              {/* QR Modal */}
-              <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
-                <DialogContent className="sm:max-w-sm">
-                  <DialogHeader>
-                    <DialogTitle className="text-center">
-                      Kode QR Peserta
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="flex flex-col items-center gap-4 py-4">
-                    <div className="p-4 border rounded-xl bg-white shadow-sm">
-                      <QRCodeCanvas
-                        id="qr-code-participant"
-                        value={selectedParticipant?.uuid || ""}
-                        size={220}
-                        level="H"
-                        includeMargin={false}
-                      />
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+                        <h3 className="font-semibold text-gray-800 text-center">
+                          Status
+                        </h3>
+                        <div className="bg-blue-50 rounded-xl p-4 text-center">
+                          <p className="text-xs text-blue-500 mb-1">
+                            Peserta Terdaftar
+                          </p>
+                          <p className="text-3xl font-bold text-blue-900">
+                            {registeredCount}
+                            <span className="text-lg text-gray-400 font-medium">
+                              {" "}
+                              / {totalParticipants}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="bg-green-50 rounded-xl p-4 text-center">
+                          <p className="text-xs text-green-500 mb-1">
+                            Race Pack Diambil
+                          </p>
+                          <p className="text-3xl font-bold text-green-900">
+                            {racePackTakenCount}
+                            <span className="text-lg text-gray-400 font-medium">
+                              {" "}
+                              / {totalParticipants}
+                            </span>
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-400 text-center">
+                          Tunjukan halaman ini saat pengambilan race pack.
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <p className="font-bold text-gray-800">
-                        {selectedParticipant?.fname}{" "}
-                        {selectedParticipant?.lname}
-                      </p>
-                      <p className="font-mono text-xs bg-gray-100 px-2 py-1 rounded mt-1 text-gray-500">
-                        {selectedParticipant?.id}
-                      </p>
+
+                    {/* Participants table */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                      <h3 className="font-semibold text-gray-800 mb-4">
+                        Detail Peserta
+                      </h3>
+                      <div className="overflow-x-auto rounded-xl border">
+                        <Table className="min-w-[700px]">
+                          <TableHeader>
+                            <TableRow className="bg-gray-50">
+                              <TableHead className="w-10">#</TableHead>
+                              <TableHead>Nama</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Kategori</TableHead>
+                              <TableHead className="text-center">
+                                Jersey
+                              </TableHead>
+                              <TableHead className="text-right">
+                                Biaya
+                              </TableHead>
+                              <TableHead className="text-center">QR</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {transaction?.participants?.map((p, index) => (
+                              <TableRow key={p.id} className="even:bg-gray-50">
+                                <TableCell className="text-gray-400">
+                                  {index + 1}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                  {p.fname} {p.lname}
+                                </TableCell>
+                                <TableCell className="text-gray-500">
+                                  {p.email}
+                                </TableCell>
+                                <TableCell>{p.master_category?.name}</TableCell>
+                                <TableCell className="text-center">
+                                  <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-semibold">
+                                    {p.size}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  Rp {p.price?.toLocaleString()}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-1.5 cursor-pointer"
+                                    onClick={() => {
+                                      setSelectedParticipant(p);
+                                      setIsQrModalOpen(true);
+                                    }}
+                                  >
+                                    <QrCode className="w-4 h-4" /> Tampilkan
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
                   </div>
-                </DialogContent>
-              </Dialog>
-            </TabsContent>
-          </Tabs>
+
+                  {/* QR Modal */}
+                  <Dialog open={isQrModalOpen} onOpenChange={setIsQrModalOpen}>
+                    <DialogContent className="sm:max-w-sm">
+                      <DialogHeader>
+                        <DialogTitle className="text-center">
+                          Kode QR Peserta
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="flex flex-col items-center gap-4 py-4">
+                        <div className="p-4 border rounded-xl bg-white shadow-sm">
+                          <QRCodeCanvas
+                            id="qr-code-participant"
+                            value={selectedParticipant?.uuid || ""}
+                            size={220}
+                            level="H"
+                            includeMargin={false}
+                          />
+                        </div>
+                        <div className="text-center">
+                          <p className="font-bold text-gray-800">
+                            {selectedParticipant?.fname}{" "}
+                            {selectedParticipant?.lname}
+                          </p>
+                          <p className="font-mono text-xs bg-gray-100 px-2 py-1 rounded mt-1 text-gray-500">
+                            {selectedParticipant?.id}
+                          </p>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </TabsContent>
+              </Tabs>
             </>
           )}
         </div>
