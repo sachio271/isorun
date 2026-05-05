@@ -184,7 +184,7 @@ export default function RegistrationPage() {
   useEffect(() => {
     if (!session?.accessToken) return;
     fetchTransaction();
-    if (session?.user?.role === "KABAG") setKabagFree(2);
+    if (session?.user?.role === "KABAG") setKabagFree(1);
     getRegistrationSettings(session.accessToken)
       .then((s) => setRegistrationOpen(s.OPEN_REGISTRATION === 1))
       .catch(() => setRegistrationOpen(true));

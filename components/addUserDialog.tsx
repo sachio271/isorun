@@ -51,6 +51,7 @@ export default function AddUserDialog({
     height: 0,
     bloodType: "",
     religion: "",
+    kabag: "0",
   });
 
   useEffect(() => {
@@ -78,6 +79,7 @@ export default function AddUserDialog({
         height: data.user.height ?? 0,
         bloodType: data.user.bloodType ?? "",
         religion: data.user.religion ?? "",
+        kabag: data.user.kabag ? "1" : "0",
       }));
     }
   }
@@ -127,6 +129,7 @@ export default function AddUserDialog({
     formData.append("height", form.height.toString());
     formData.append("bloodType", form.bloodType);
     formData.append("religion", form.religion);
+    formData.append("kabag", form.kabag);
 
     onAdd(formData);
     setForm({
@@ -146,6 +149,7 @@ export default function AddUserDialog({
         height: 0,
         bloodType: "",
         religion: "",
+        kabag: "0",
     });
     onClose();
   };
@@ -314,6 +318,24 @@ export default function AddUserDialog({
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="mb-2">
+            <Label className="capitalize mb-2" htmlFor="kabag">
+              Kabag
+            </Label>
+            <Select
+              value={form.kabag}
+              onValueChange={(val) => setForm({ ...form, kabag: val })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih status Kabag" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Bukan Kabag</SelectItem>
+                <SelectItem value="1">Kabag</SelectItem>
+              </SelectContent>
+            </Select>
         </div>
 
         <DialogFooter>

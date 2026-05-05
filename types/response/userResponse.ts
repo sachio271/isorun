@@ -55,6 +55,7 @@ export interface UsersRef {
   bloodType: string;
   religion: string;
   struct: string;
+  kabag: boolean;
   family_ref: FamilyRef[];
 }
 

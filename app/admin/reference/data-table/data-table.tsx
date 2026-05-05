@@ -49,17 +49,18 @@ export function DataTable({ data, meta, onPageChange, onSearchChange, onEdit, is
               <th className="px-4 py-3 text-left">Email</th>
               <th className="px-4 py-3 text-left">Telepon</th>
               <th className="px-4 py-3 text-left">Tipe</th>
+              <th className="px-4 py-3 text-center">Kabag</th>
               <th className="px-4 py-3 text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="text-center py-16 text-gray-400">Memuat data...</td>
+                <td colSpan={8} className="text-center py-16 text-gray-400">Memuat data...</td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-16 text-gray-400">Tidak ada data.</td>
+                <td colSpan={8} className="text-center py-16 text-gray-400">Tidak ada data.</td>
               </tr>
             ) : (
               data.map((user, i) => (
@@ -79,6 +80,12 @@ export function DataTable({ data, meta, onPageChange, onSearchChange, onEdit, is
                     }`}>
                       {user.type || "-"}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {user.kabag
+                      ? <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Kabag</span>
+                      : <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">-</span>
+                    }
                   </td>
                   <td className="px-4 py-3 text-center">
                     <DropdownMenu>
