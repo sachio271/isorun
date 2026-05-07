@@ -1,7 +1,13 @@
+"use client";
+
 import Header from "@/components/header";
-import { BadgeCheck, BookUser, ClipboardList, CreditCard, UserPlus } from "lucide-react";
+import { showToast } from "@/components/toast-notification";
+import { createTroubleReport } from "@/lib/api/troubleReportApi";
+import { BadgeCheck, BookUser, ClipboardList, CreditCard, Loader2, MessageSquareWarning, Phone, UserPlus } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 const steps = [
   { icon: UserPlus, title: "Buka Registrasi", desc: "Masuk ke menu Registrasi melalui navigasi atas." },
@@ -13,6 +19,28 @@ const steps = [
 ];
 
 export default function Home() {
+  const { data: session } = useSession();
+  const [reportForm, setReportForm] = useState({ title: "", description: "" });
+  const [reportLoading, setReportLoading] = useState(false);
+
+  const handleReportSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!reportForm.title.trim() || !reportForm.description.trim()) return;
+    setReportLoading(true);
+    try {
+      await createTroubleReport({
+        title: reportForm.title,
+        description: reportForm.description,
+        participantId: session?.user?.id ?? "",
+      });
+      showToast({ type: "success", title: "Laporan Terkirim", description: "Laporan kamu telah diterima oleh admin." });
+      setReportForm({ title: "", description: "" });
+    } catch {
+      showToast({ type: "error", title: "Gagal", description: "Laporan tidak dapat dikirim. Silakan coba lagi." });
+    }
+    setReportLoading(false);
+  };
+
   return (
     <main className="min-h-screen bg-[#f4f6f8]">
       <Header />
@@ -95,6 +123,86 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Report Problem */}
+      <section className="py-20 px-4 md:px-16 max-w-5xl mx-auto" id="report-problem">
+        <div className="text-center mb-10">
+          <span className="text-sm uppercase tracking-widest text-red-500 font-semibold">Bantuan</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-gray-800">Laporkan Masalah</h2>
+          <p className="mt-3 text-gray-500 max-w-md mx-auto text-sm">
+            Ada kendala dalam proses pendaftaran? Sampaikan laporanmu dan admin akan segera menindaklanjuti.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          {/* Form */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="flex items-center gap-2 mb-6">
+              <MessageSquareWarning className="w-5 h-5 text-[#263C7D]" />
+              <h3 className="font-semibold text-gray-800">Kirim Laporan</h3>
+            </div>
+            <form onSubmit={handleReportSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Judul Masalah</label>
+                <input
+                  type="text"
+                  value={reportForm.title}
+                  onChange={e => setReportForm({ ...reportForm, title: e.target.value })}
+                  placeholder="Contoh: Tidak bisa upload bukti pembayaran"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Deskripsi</label>
+                <textarea
+                  value={reportForm.description}
+                  onChange={e => setReportForm({ ...reportForm, description: e.target.value })}
+                  placeholder="Jelaskan masalah yang kamu alami secara detail..."
+                  rows={5}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition resize-none"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={reportLoading}
+                className="mt-2 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#263C7D] hover:bg-[#1e2f61] text-white font-semibold text-sm transition-all disabled:opacity-60"
+              >
+                {reportLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Kirim Laporan"}
+              </button>
+            </form>
+          </div>
+
+          {/* Helpdesk info */}
+          <div className="flex flex-col gap-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Phone className="w-5 h-5 text-[#263C7D]" />
+                <h3 className="font-semibold text-gray-800">Hubungi Helpdesk HRD</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Jika kamu membutuhkan bantuan lebih lanjut, silakan hubungi tim Helpdesk HRD kami secara langsung.
+              </p>
+              <a
+                href="https://wa.me/6288210500000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white text-sm font-semibold transition-all"
+              >
+                <Phone className="w-4 h-4" />
+                +62-882-1050-0000
+              </a>
+            </div>
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
+              <p className="text-sm text-amber-700 font-medium mb-1">Catatan</p>
+              <p className="text-sm text-amber-600">
+                Laporan yang kamu kirim akan langsung diterima oleh admin dan ditindaklanjuti secepatnya pada jam kerja.
+              </p>
+            </div>
           </div>
         </div>
       </section>

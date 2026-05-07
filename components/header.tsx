@@ -14,6 +14,7 @@ const adminLinks = [
   { title: "Manage Users", link: "/admin/users" },
   { title: "Manage Reference", link: "/admin/reference" },
   { title: "Manage Categories", link: "/admin/categories" },
+  { title: "Laporan", link: "/admin/reports" },
 ];
 
 const userLinks: Record<string, { title: string; link: string }[]> = {
