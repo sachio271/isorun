@@ -4,7 +4,6 @@ import Header from "@/components/header";
 import { showToast } from "@/components/toast-notification";
 import { createTroubleReport } from "@/lib/api/troubleReportApi";
 import { BadgeCheck, BookUser, ClipboardList, CreditCard, Loader2, MessageSquareWarning, Phone, UserPlus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -18,23 +17,19 @@ const steps = [
   { icon: BadgeCheck, title: "Pendaftaran Selesai!", desc: "Kamu resmi terdaftar sebagai peserta. Selamat berlari!" },
 ];
 
+const EMPTY_FORM = { name: "", wa: "", email: "", nik: "", title: "", description: "" };
+
 export default function Home() {
-  const { data: session } = useSession();
-  const [reportForm, setReportForm] = useState({ title: "", description: "" });
+  const [reportForm, setReportForm] = useState(EMPTY_FORM);
   const [reportLoading, setReportLoading] = useState(false);
 
   const handleReportSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!reportForm.title.trim() || !reportForm.description.trim()) return;
     setReportLoading(true);
     try {
-      await createTroubleReport({
-        title: reportForm.title,
-        description: reportForm.description,
-        participantId: session?.user?.id ?? "",
-      });
+      await createTroubleReport(reportForm);
       showToast({ type: "success", title: "Laporan Terkirim", description: "Laporan kamu telah diterima oleh admin." });
-      setReportForm({ title: "", description: "" });
+      setReportForm(EMPTY_FORM);
     } catch {
       showToast({ type: "error", title: "Gagal", description: "Laporan tidak dapat dikirim. Silakan coba lagi." });
     }
@@ -103,17 +98,13 @@ export default function Home() {
         </div>
 
         <div className="relative">
-          {/* vertical line */}
           <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[#263C7D]/15 hidden md:block" />
-
           <div className="flex flex-col gap-8">
             {steps.map((step, i) => (
               <div key={i} className="flex items-start gap-6 group">
-                {/* Number bubble */}
                 <div className="relative flex-shrink-0 w-12 h-12 rounded-full bg-[#263C7D] text-white flex items-center justify-center font-bold text-lg shadow-md group-hover:scale-110 transition-transform z-10">
                   {i + 1}
                 </div>
-                {/* Card */}
                 <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 px-6 py-5 group-hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2 mb-1">
                     <step.icon className="w-4 h-4 text-[#263C7D]" />
@@ -131,53 +122,102 @@ export default function Home() {
       <section className="py-20 px-4 md:px-16 max-w-5xl mx-auto" id="report-problem">
         <div className="text-center mb-10">
           <span className="text-sm uppercase tracking-widest text-red-500 font-semibold">Bantuan</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-gray-800">Laporkan Masalah</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 text-gray-800">Ada Kendala?</h2>
           <p className="mt-3 text-gray-500 max-w-md mx-auto text-sm">
-            Ada kendala dalam proses pendaftaran? Sampaikan laporanmu dan admin akan segera menindaklanjuti.
+            Sampaikan laporanmu dan admin akan segera menindaklanjuti. Atau hubungi Helpdesk HRD secara langsung.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
-          {/* Form */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <div className="flex items-center gap-2 mb-6">
+          {/* Left: form always visible */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-2 mb-5">
               <MessageSquareWarning className="w-5 h-5 text-[#263C7D]" />
               <h3 className="font-semibold text-gray-800">Kirim Laporan</h3>
             </div>
-            <form onSubmit={handleReportSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleReportSubmit} className="flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-gray-600">Nama Lengkap</label>
+                  <input
+                    type="text"
+                    value={reportForm.name}
+                    onChange={e => setReportForm({ ...reportForm, name: e.target.value.replace(/[^a-zA-Z\s]/g, "") })}
+                    placeholder="John Doe"
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-gray-600">NIK</label>
+                  <input
+                    type="text"
+                    value={reportForm.nik}
+                    onChange={e => setReportForm({ ...reportForm, nik: e.target.value.replace(/\D/g, "") })}
+                    inputMode="numeric"
+                    placeholder="35012345678901234"
+                    maxLength={16}
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                    required
+                  />
+                </div>
+              </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">Judul Masalah</label>
+                <label className="text-xs font-medium text-gray-600">Email</label>
+                <input
+                  type="email"
+                  value={reportForm.email}
+                  onChange={e => setReportForm({ ...reportForm, email: e.target.value })}
+                  placeholder="johndoe@example.com"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-600">No. WhatsApp</label>
+                <input
+                  type="text"
+                  value={reportForm.wa}
+                  onChange={e => setReportForm({ ...reportForm, wa: e.target.value.replace(/\D/g, "") })}
+                  inputMode="numeric"
+                  placeholder="08xxxxxxxxxx"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                  required
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-gray-600">Judul Masalah</label>
                 <input
                   type="text"
                   value={reportForm.title}
                   onChange={e => setReportForm({ ...reportForm, title: e.target.value })}
                   placeholder="Contoh: Tidak bisa upload bukti pembayaran"
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition"
                   required
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">Deskripsi</label>
+                <label className="text-xs font-medium text-gray-600">Deskripsi</label>
                 <textarea
                   value={reportForm.description}
                   onChange={e => setReportForm({ ...reportForm, description: e.target.value })}
                   placeholder="Jelaskan masalah yang kamu alami secara detail..."
-                  rows={5}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition resize-none"
+                  rows={4}
+                  className="rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#263C7D]/30 focus:border-[#263C7D] transition resize-none"
                   required
                 />
               </div>
               <button
                 type="submit"
                 disabled={reportLoading}
-                className="mt-2 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#263C7D] hover:bg-[#1e2f61] text-white font-semibold text-sm transition-all disabled:opacity-60"
+                className="mt-1 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#263C7D] hover:bg-[#1e2f61] text-white font-semibold text-sm transition-all disabled:opacity-60"
               >
                 {reportLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Kirim Laporan"}
               </button>
             </form>
           </div>
 
-          {/* Helpdesk info */}
+          {/* Right: helpdesk info */}
           <div className="flex flex-col gap-4">
             <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-3">

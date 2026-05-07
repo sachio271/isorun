@@ -2,15 +2,13 @@ import axiosInstance from "../axiosInstance";
 
 export interface TroubleReport {
   id: number;
+  name: string;
+  wa: string;
+  email: string;
+  nik: string;
   title: string;
   description: string;
-  createdBy: string;
   createdAt: string;
-  user?: {
-    id: string;
-    name: string;
-    username: string;
-  };
 }
 
 export interface TroubleReportMeta {
@@ -21,9 +19,12 @@ export interface TroubleReportMeta {
 }
 
 export const createTroubleReport = async (payload: {
+  name: string;
+  wa: string;
+  email: string;
+  nik: string;
   title: string;
   description: string;
-  participantId: string;
 }) => {
   const response = await axiosInstance.post("/trouble-report", payload);
   return response.data;

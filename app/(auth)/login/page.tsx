@@ -1,4 +1,5 @@
 import FormLogin from "@/components/form-login"
+import { ReportProblemSection } from "@/components/report-problem-section"
 import Image from "next/image"
 
 const Login = () => {
@@ -12,6 +13,7 @@ const Login = () => {
           className="mx-auto mb-4"
         />
         <FormLogin />
+        <ReportProblemSection />
     </div>
   )
 }

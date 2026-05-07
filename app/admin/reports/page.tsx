@@ -2,7 +2,7 @@
 
 import { showToast } from "@/components/toast-notification";
 import { getAllTroubleReports, TroubleReport, TroubleReportMeta } from "@/lib/api/troubleReportApi";
-import { MessageSquareWarning, Search } from "lucide-react";
+import { Mail, MessageSquareWarning, Phone, Search } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -83,14 +83,15 @@ export default function AdminReportsPage() {
                 <div className="grid gap-4">
                     {reports.map((report) => (
                         <div key={report.id} className="rounded-2xl border border-gray-100 bg-gray-50/50 p-5 flex flex-col gap-3">
+                            {/* Header: sender info + date */}
                             <div className="flex items-start justify-between gap-4 flex-wrap">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-[#263C7D]/10 flex items-center justify-center flex-shrink-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-[#263C7D]/10 flex items-center justify-center flex-shrink-0">
                                         <MessageSquareWarning className="w-4 h-4 text-[#263C7D]" />
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-gray-800 text-sm">{report.user?.name ?? "—"}</p>
-                                        <p className="text-xs text-gray-400">{report.user?.username ?? ""}</p>
+                                        <p className="font-semibold text-gray-800 text-sm">{report.name}</p>
+                                        <p className="text-xs text-gray-400">NIK: {report.nik}</p>
                                     </div>
                                 </div>
                                 <span className="text-xs text-gray-400 whitespace-nowrap">
@@ -102,6 +103,18 @@ export default function AdminReportsPage() {
                                         : "—"}
                                 </span>
                             </div>
+
+                            {/* Contact row */}
+                            <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+                                <span className="flex items-center gap-1">
+                                    <Mail className="w-3.5 h-3.5" />{report.email}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    <Phone className="w-3.5 h-3.5" />{report.wa}
+                                </span>
+                            </div>
+
+                            {/* Report content */}
                             <div className="border-t border-gray-100 pt-3">
                                 <p className="font-semibold text-gray-800 mb-1">{report.title}</p>
                                 <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{report.description}</p>
