@@ -29,7 +29,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4">
           <div className="mb-6">
-            <Image src="/logo.png" alt="Isoplus Logo" width={100} height={100} className="mx-auto drop-shadow-xl" />
+            <Image src="/isoplus.png" alt="Isoplus Logo" width={100} height={100} className="mx-auto drop-shadow-xl" />
           </div>
           <span className="uppercase tracking-widest text-sm font-semibold text-blue-300 mb-3">
             Wings Surya — Internal Registration

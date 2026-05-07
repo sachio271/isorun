@@ -5,7 +5,7 @@ const Login = () => {
   return (
     <div>
         <Image
-          src="/logo.png"
+          src="/isoplus.png"
           alt="App Logo"
           width={280}
           height={280}

@@ -74,7 +74,7 @@ function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo.png"
+            src="/isoplus.png"
             alt="Isoplus"
             width={scrolledNav ? 56 : 64}
             height={scrolledNav ? 56 : 64}

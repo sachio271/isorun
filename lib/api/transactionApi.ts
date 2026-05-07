@@ -137,3 +137,16 @@ export const deleteParticipant = async (token: string, id: string) => {
   );
   return response.data;
 };
+
+export const setParticipantFree = async (token: string, id: string) => {
+  const response = await axiosInstance.patch(
+    `/participant/${id}`,
+    {},
+    {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    },
+  );
+  return response.data;
+};

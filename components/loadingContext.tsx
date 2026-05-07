@@ -29,7 +29,7 @@ const LoadingOverlay = () => (
   <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/30 backdrop-blur-sm">
     <div className="animate-bounce">
       <Image
-        src="/logo.png"
+        src="/isoplus.png"
         alt="Loading logo"
         width={130}
         height={130}
