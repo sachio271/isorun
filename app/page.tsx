@@ -21,7 +21,7 @@ export default function Home() {
       <section className="relative h-screen w-full overflow-hidden">
         <Image
           src="/banner 2.webp"
-          alt="Surabaya Isoplus Marathon 2025"
+          alt="Surabaya Isoplus Marathon 2026"
           fill
           className="object-cover"
           priority
@@ -35,7 +35,7 @@ export default function Home() {
             Wings Surya — Internal Registration
           </span>
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight drop-shadow-lg max-w-3xl">
-            Surabaya Isoplus Marathon 2025
+            Surabaya Isoplus Marathon 2026
           </h1>
           <p className="mt-4 text-base md:text-lg text-white/80 max-w-xl">
             Daftarkan dirimu sekarang dan jadilah bagian dari semangat Wings Surya berlari bersama.
@@ -101,7 +101,7 @@ export default function Home() {
 
       {/* Footer strip */}
       <footer className="bg-[#263C7D] text-white/70 text-center text-xs py-5 mt-10">
-        © 2025 Wings Surya — Surabaya Isoplus Marathon. All rights reserved.
+        © 2026 Wings Surya — Surabaya Isoplus Marathon. All rights reserved.
       </footer>
     </main>
   );

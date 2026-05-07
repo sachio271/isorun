@@ -8,7 +8,7 @@ import { getRegistrationSettings, getTransaction, updateRegistrationSettings } f
 import { EnrichParticipant, Transaction } from "@/types/response/transactionResponse";
 import { Layers, Loader2, LockKeyhole, UnlockKeyhole, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 
 export default function AdminRegistrationPage() {
@@ -147,7 +147,9 @@ export default function AdminRegistrationPage() {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Daftar Transaksi</h2>
                     <div className="w-full overflow-x-auto">
-                        <DataTable data={dataTransaction} />
+                        <Suspense fallback={null}>
+                            <DataTable data={dataTransaction} />
+                        </Suspense>
                     </div>
                 </div>
             </div>

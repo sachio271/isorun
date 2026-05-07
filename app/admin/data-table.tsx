@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Transaction } from "@/types/response/transactionResponse"
 import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Fragment, useMemo, useState } from "react"
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
@@ -28,11 +28,21 @@ interface Props {
 
 export function DataTable({ data }: Props) {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
-  const [page, setPage] = useState(0)
   const PAGE_SIZE = 10
+
+  const page = parseInt(searchParams.get("page") ?? "0")
+
+  const setPage = (next: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", next.toString())
+    router.replace(`${pathname}?${params.toString()}`)
+  }
 
   const toggle = (id: string) =>
     setExpandedIds(prev => {
@@ -57,7 +67,8 @@ export function DataTable({ data }: Props) {
   }, [data, search, statusFilter])
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
-  const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  const safePage = Math.min(page, Math.max(totalPages - 1, 0))
+  const paged = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE)
 
   const handleSearch = (v: string) => { setSearch(v); setPage(0) }
   const handleStatus = (v: string) => { setStatusFilter(v); setPage(0) }
@@ -234,11 +245,11 @@ export function DataTable({ data }: Props) {
       <div className="flex items-center justify-between text-sm text-gray-500">
         <span>{filtered.length} transaksi ditemukan</span>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setPage(p => p - 1)} disabled={page === 0}>
+          <Button variant="outline" size="sm" onClick={() => setPage(safePage - 1)} disabled={safePage === 0}>
             Sebelumnya
           </Button>
-          <span className="px-2">{page + 1} / {Math.max(totalPages, 1)}</span>
-          <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages - 1}>
+          <span className="px-2">{safePage + 1} / {Math.max(totalPages, 1)}</span>
+          <Button variant="outline" size="sm" onClick={() => setPage(safePage + 1)} disabled={safePage >= totalPages - 1}>
             Berikutnya
           </Button>
         </div>
