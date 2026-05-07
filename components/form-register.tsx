@@ -71,9 +71,13 @@ const FormRegister = () => {
                             id="ektp"
                             type="text"
                             name="ektp"
+                            inputMode="numeric"
                             placeholder="35012345678901234"
                             className="bg-white/30 text-white placeholder:text-white"
                             required
+                            onInput={(e) => {
+                                e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+                            }}
                         />
                         {errors.ektp && (
                             <div className="text-red-500 text-sm mt-2">{errors.ektp[0]}</div>
@@ -88,6 +92,9 @@ const FormRegister = () => {
                             placeholder="johnDoe"
                             className="bg-white/30 text-white placeholder:text-white"
                             required
+                            onInput={(e) => {
+                                e.currentTarget.value = e.currentTarget.value.replace(/[^a-zA-Z\s]/g, "");
+                            }}
                         />
                         {errors.username && (
                             <div className="text-red-500 text-sm mt-2">{errors.name[0]}</div>

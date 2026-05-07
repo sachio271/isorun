@@ -352,13 +352,13 @@ export default function AddParticipantDialog({
         <div className="mb-2">
             <div className="flex items-center justify-between">
               <Label className="capitalize mb-2" htmlFor="bibname">
-                Bib Name (nama di jersey)
+                Bib Name
               </Label>
               <span className="text-xs text-red-700">
               * required (max 8 char)
               </span>
             </div>
-            <Input id="bibname" required placeholder="Nama Bib" maxLength={8} value={form.bibname} onChange={(e) => setForm({ ...form, bibname: e.target.value })} />
+            <Input id="bibname" required placeholder="Nama Bib" maxLength={8} value={form.bibname} onChange={(e) => setForm({ ...form, bibname: e.target.value.replace(/[^a-zA-Z\s]/g, "") })} />
         </div>
         <div className="mb-2">
             <div className="flex items-center justify-between">
@@ -406,7 +406,7 @@ export default function AddParticipantDialog({
               * required
               </span>
             </div>
-            <Input id="identityId" required placeholder="Identity ID" value={form.identityId} onChange={(e) => setForm({ ...form, identityId: e.target.value })} />
+            <Input id="identityId" required placeholder="Identity ID" inputMode="numeric" value={form.identityId} onChange={(e) => setForm({ ...form, identityId: e.target.value.replace(/\D/g, "") })} />
         </div>
         <div className="mb-2">
             <div className="flex items-center justify-between">

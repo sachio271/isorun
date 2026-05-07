@@ -36,7 +36,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
+
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -407,11 +407,10 @@ const TransactionDetails = () => {
                 className="block group"
               >
                 <div className="relative rounded-xl overflow-hidden border border-gray-100">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={src}
                     alt="Bukti Transfer"
-                    width={500}
-                    height={400}
                     className="w-full object-contain max-h-64 group-hover:opacity-90 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">

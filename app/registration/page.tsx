@@ -417,7 +417,7 @@ export default function RegistrationPage() {
               Pendaftaran Peserta
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              Surabaya Isoplus Marathon 2025 — Wings Surya
+              Surabaya Isoplus Marathon 2026 — Wings Surya
             </p>
           </div>
 
