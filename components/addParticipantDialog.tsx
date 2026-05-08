@@ -33,7 +33,7 @@ export default function AddParticipantDialog({
   onClose,
   onAdd,
   participants,
-  free
+  free,
 }: {
   open: boolean;
   onClose: () => void;
@@ -44,17 +44,21 @@ export default function AddParticipantDialog({
   const { data: session } = useSession();
   const [selectedUserIndex, setSelectedUserIndex] = useState("0");
   const [userList, setUserList] = useState<UserData[]>([]);
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);  
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const availableUsers = userList.filter(
-    (user) => !participants.some((p) => p.fullName === user.name)
+    (user) => !participants.some((p) => p.fullName === user.name),
   );
   const [manualFreeClaimChecked, setManualFreeClaimChecked] = useState(false);
-  const selectedUser = availableUsers[parseInt(selectedUserIndex)] || availableUsers[0];
+  const selectedUser =
+    availableUsers[parseInt(selectedUserIndex)] || availableUsers[0];
   const isEmployee = selectedUser?.status === "employee";
   const isFreeClaimChecked = (isEmployee && free > 0) || manualFreeClaimChecked;
 
   const filteredCategories = categories.filter(
-    (cat) => cat.status === 1 && cat.type === (selectedUser?.status === "employee" ? "employee" : "family")
+    (cat) =>
+      cat.status === 1 &&
+      cat.type ===
+        (selectedUser?.status === "employee" ? "employee" : "family"),
   );
 
   const [form, setForm] = useState({
@@ -97,19 +101,20 @@ export default function AddParticipantDialog({
 
   const preFillFormData = () => {
     if (open && availableUsers.length > 0) {
-      const selectedUser = availableUsers[parseInt(selectedUserIndex)] || availableUsers[0];
+      const selectedUser =
+        availableUsers[parseInt(selectedUserIndex)] || availableUsers[0];
       const nameParts = selectedUser.name.trim().split(" ");
-  
+
       let fname = "";
       let lname = "";
-  
+
       if (nameParts.length === 1) {
         fname = lname = nameParts[0];
       } else {
         fname = nameParts[0];
         lname = nameParts.slice(1).join(" ");
       }
-  
+
       setForm((prev) => ({
         ...prev,
         fullName: selectedUser.name,
@@ -130,12 +135,11 @@ export default function AddParticipantDialog({
         gender: selectedUser.gender || "",
       }));
     }
-  }
+  };
 
   useEffect(() => {
     preFillFormData();
   }, [open, selectedUserIndex, userList]);
-  
 
   const fetchUser = async (id: string) => {
     try {
@@ -254,8 +258,6 @@ export default function AddParticipantDialog({
     setManualFreeClaimChecked(false);
     onClose();
   };
-  
-  
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -285,44 +287,51 @@ export default function AddParticipantDialog({
               ))}
             </SelectContent>
           </Select>
-            {free <= 0 ? (
-              <div className="text-red-500 text-sm mt-2">Tidak ada slot gratis yang tersedia</div>
-            ) : (
-              <div className="flex items-center space-x-2 mt-2">
-                <Checkbox 
-                  id="terms"
-                  checked={isFreeClaimChecked}
-                  disabled={isEmployee}
-                  onCheckedChange={(val) => {
-                    if (!isEmployee && typeof val === "boolean") {
-                      setManualFreeClaimChecked(val);
-                    }
-                  }}
-                />
-                <label
-                  htmlFor="terms"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Klaim slot gratis pada user ini
-                </label>
-              </div>
+          {free <= 0 ? (
+            <div className="text-red-500 text-sm mt-2">
+              Tidak ada slot gratis yang tersedia
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2 mt-2">
+              <Checkbox
+                id="terms"
+                checked={isFreeClaimChecked}
+                disabled={isEmployee}
+                onCheckedChange={(val) => {
+                  if (!isEmployee && typeof val === "boolean") {
+                    setManualFreeClaimChecked(val);
+                  }
+                }}
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Klaim slot gratis pada user ini
+              </label>
+            </div>
           )}
         </div>
         <div className="mb-2">
           <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="category">
-                Categori
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
+            <Label className="capitalize mb-2" htmlFor="category">
+              Categori
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
           </div>
           <Select
             value={form.categoryName || ""}
             required
             onValueChange={(val) => {
-              const selectedCategory = filteredCategories.find(cat => cat.name.toString() === val);
-              setForm({ ...form, categoryId: selectedCategory?.id.toString() ?? '', categoryName: selectedCategory?.name || "", categoryPrice: selectedCategory?.price.toString() || "" });
+              const selectedCategory = filteredCategories.find(
+                (cat) => cat.name.toString() === val,
+              );
+              setForm({
+                ...form,
+                categoryId: selectedCategory?.id.toString() ?? "",
+                categoryName: selectedCategory?.name || "",
+                categoryPrice: selectedCategory?.price.toString() || "",
+              });
             }}
           >
             <SelectTrigger className="w-full">
@@ -338,47 +347,77 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="fname">
-              Front Name
-            </Label>
-            <Input id="fname" disabled required placeholder="Nama" value={form.fname} onChange={(e) => setForm({ ...form, fname: e.target.value })} />
+          <Label className="capitalize mb-2" htmlFor="fname">
+            Front Name
+          </Label>
+          <Input
+            id="fname"
+            disabled
+            required
+            placeholder="Nama"
+            value={form.fname}
+            onChange={(e) => setForm({ ...form, fname: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <Label className="capitalize mb-2" htmlFor="lname">
-              Back Name
-            </Label>
-            <Input id="lname" disabled required placeholder="Nama Belakang" value={form.lname} onChange={(e) => setForm({ ...form, lname: e.target.value })} />
+          <Label className="capitalize mb-2" htmlFor="lname">
+            Back Name
+          </Label>
+          <Input
+            id="lname"
+            disabled
+            required
+            placeholder="Nama Belakang"
+            value={form.lname}
+            onChange={(e) => setForm({ ...form, lname: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="bibname">
-                Bib Name
-              </Label>
-              <span className="text-xs text-red-700">
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="bibname">
+              Bib Name
+            </Label>
+            <span className="text-xs text-red-700">
               * required (max 8 char)
-              </span>
-            </div>
-            <Input id="bibname" required placeholder="Nama Bib" maxLength={8} value={form.bibname} onChange={(e) => setForm({ ...form, bibname: e.target.value.replace(/[^a-zA-Z\s]/g, "") })} />
+            </span>
+          </div>
+          <Input
+            id="bibname"
+            required
+            placeholder="Nama Bib"
+            maxLength={8}
+            value={form.bibname}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                bibname: e.target.value.replace(/[^a-zA-Z\s]/g, ""),
+              })
+            }
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="size">
-                Size Jersey
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Select
-              value={form.size}
-              required
-              onValueChange={(val) => setForm({ ...form, size: val })}
-            >
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="size">
+              Size Jersey
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Select
+            value={form.size}
+            required
+            onValueChange={(val) => setForm({ ...form, size: val })}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Size" />
             </SelectTrigger>
             <SelectContent>
-              {["S (48cm x 68cm)", "M (51cm x 70cm)", "L (54cm x 72cm)", "XL (58cm x 74cm)", "XXL (62cm x 74cm)", "S Kids (39cm x 52cm)", "M Kids (42cm x 55cm)", "L Kids (45cm x 58cm)"].map((type) => (
+              {[
+                "S (48cm x 68cm)",
+                "M (51cm x 70cm)",
+                "L (54cm x 72cm)",
+                "XL (58cm x 74cm)",
+                "XXL (62cm x 74cm)",
+              ].map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
                 </SelectItem>
@@ -387,63 +426,85 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="email">
-                Email
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="email" type="email" required placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="email">
+              Email
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="email"
+            type="email"
+            required
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="identityId">
-                Nomor EKTP
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="identityId" required placeholder="Identity ID" inputMode="numeric" value={form.identityId} onChange={(e) => setForm({ ...form, identityId: e.target.value.replace(/\D/g, "") })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="identityId">
+              Nomor EKTP
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="identityId"
+            required
+            placeholder="Identity ID"
+            inputMode="numeric"
+            value={form.identityId}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                identityId: e.target.value.replace(/\D/g, ""),
+              })
+            }
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="birthplace">
-                Tempat Lahir
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="birthplace" required placeholder="Tempat Lahir" value={form.birthplace} onChange={(e) => setForm({ ...form, birthplace: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="birthplace">
+              Tempat Lahir
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="birthplace"
+            required
+            placeholder="Tempat Lahir"
+            value={form.birthplace}
+            onChange={(e) => setForm({ ...form, birthplace: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="birthdate">
-                Tanggal Lahir
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="birthdate" required type="date" placeholder="Tanggal Lahir" value={form.birthdate} onChange={(e) => setForm({ ...form, birthdate: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="birthdate">
+              Tanggal Lahir
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="birthdate"
+            required
+            type="date"
+            placeholder="Tanggal Lahir"
+            value={form.birthdate}
+            onChange={(e) => setForm({ ...form, birthdate: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="gender">
-                Jenis Kelamin
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Select
-              value={form.gender}
-              required
-              onValueChange={(val) => setForm({ ...form, gender: val })}
-            >
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="gender">
+              Jenis Kelamin
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Select
+            value={form.gender}
+            required
+            onValueChange={(val) => setForm({ ...form, gender: val })}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Gender" />
             </SelectTrigger>
@@ -457,85 +518,107 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="phone">
-                Nomor Telepon
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="phone" required placeholder="No. Telepon" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="phone">
+              Nomor Telepon
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="phone"
+            required
+            placeholder="No. Telepon"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="address">
-                Alamat
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="address" required placeholder="Alamat" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="address">
+              Alamat
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="address"
+            required
+            placeholder="Alamat"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="zipcode">
-                Kode Pos
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="zipcode" required placeholder="Kode Pos" value={form.zipcode} onChange={(e) => setForm({ ...form, zipcode: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="zipcode">
+              Kode Pos
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="zipcode"
+            required
+            placeholder="Kode Pos"
+            value={form.zipcode}
+            onChange={(e) => setForm({ ...form, zipcode: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="province">
-                Provinsi
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="province" required placeholder="Provinsi" value={form.province} onChange={(e) => setForm({ ...form, province: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="province">
+              Provinsi
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="province"
+            required
+            placeholder="Provinsi"
+            value={form.province}
+            onChange={(e) => setForm({ ...form, province: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="city">
-                Kota
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="city" required placeholder="Kota" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="city">
+              Kota
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="city"
+            required
+            placeholder="Kota"
+            value={form.city}
+            onChange={(e) => setForm({ ...form, city: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="country">
-                Negara
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="country" required placeholder="Negara" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} />
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="country">
+              Negara
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="country"
+            required
+            placeholder="Negara"
+            value={form.country}
+            onChange={(e) => setForm({ ...form, country: e.target.value })}
+          />
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="bloodType">
-                Golongan Darah
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Select
-              value={form.bloodType}
-              required
-              onValueChange={(val) => setForm({ ...form, bloodType: val })}
-            >
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="bloodType">
+              Golongan Darah
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Select
+            value={form.bloodType}
+            required
+            onValueChange={(val) => setForm({ ...form, bloodType: val })}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select Blood Type" />
             </SelectTrigger>
@@ -549,20 +632,30 @@ export default function AddParticipantDialog({
           </Select>
         </div>
         <div className="mb-2">
-            <div className="flex items-center justify-between">
-              <Label className="capitalize mb-2" htmlFor="condition">
-                Kondisi
-              </Label>
-              <span className="text-xs text-red-700">
-              * required
-              </span>
-            </div>
-            <Input id="condition" placeholder="Kondisi" value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} />
-            <div className="text-sm text-gray-600">contoh: jantung, gangguan pernafasan, hamil</div>
+          <div className="flex items-center justify-between">
+            <Label className="capitalize mb-2" htmlFor="condition">
+              Kondisi
+            </Label>
+            <span className="text-xs text-red-700">* required</span>
+          </div>
+          <Input
+            id="condition"
+            placeholder="Kondisi"
+            value={form.condition}
+            onChange={(e) => setForm({ ...form, condition: e.target.value })}
+          />
+          <div className="text-sm text-gray-600">
+            contoh: jantung, gangguan pernafasan, hamil
+          </div>
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit} className="bg-[#263c7d] hover: cursor-pointer">Save</Button>
+          <Button
+            onClick={handleSubmit}
+            className="bg-[#263c7d] hover: cursor-pointer"
+          >
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
