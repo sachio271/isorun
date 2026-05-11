@@ -203,6 +203,25 @@ export default function AddParticipantDialog({
       });
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(form.email)) {
+      showToast({
+        title: "Email Tidak Valid",
+        description: "Masukkan format email yang benar, contoh: nama@email.com",
+        type: "error",
+      });
+      return;
+    }
+
+    if (form.identityId.length < 16) {
+      showToast({
+        title: "NIK Tidak Valid",
+        description: "NIK harus 16 digit.",
+        type: "error",
+      });
+      return;
+    }
     let price = form.categoryPrice;
     if (isFreeClaimChecked) {
       price = "0";

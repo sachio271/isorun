@@ -262,7 +262,7 @@ export default function RegistrationPage() {
         session.accessToken,
       );
       const transactionId = transactionResponse.id;
-      participants.forEach(async (p) => {
+      await Promise.all(participants.map(async (p) => {
         const pf = new FormData();
         pf.append("fname", p.fname);
         pf.append("lname", p.lname);
@@ -284,7 +284,7 @@ export default function RegistrationPage() {
         pf.append("gender", p.gender.toString());
         pf.append("condition", p.condition.toString());
         await createParticipant(pf, session?.accessToken, transactionId);
-      });
+      }));
       showToast({
         title: "Data saved!",
         description: "Your data was saved.",
