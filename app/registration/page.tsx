@@ -147,6 +147,14 @@ export default function RegistrationPage() {
     emergencyPhone: "",
   });
 
+  const [formErrors, setFormErrors] = useState({
+    pt: false,
+    divisi: false,
+    emergencyName: false,
+    emergencyPhone: false,
+    participants: false,
+  });
+
   const fetchTransaction = async () => {
     if (!session?.accessToken) return;
     showLoading();
@@ -196,6 +204,7 @@ export default function RegistrationPage() {
   const handleAddParticipant = (formData: FormData) => {
     const isFreeUsed = formData.get("categoryPrice") === "0";
     if (isFreeUsed && kabagFree > 0) setKabagFree((prev) => prev - 1);
+    setFormErrors((prev) => ({ ...prev, participants: false }));
     setParticipants((prev) => [
       ...prev,
       {
@@ -229,23 +238,20 @@ export default function RegistrationPage() {
 
   const handleTransaction = async () => {
     if (!session?.accessToken) return;
-    if (participants.length === 0) {
+
+    const errors = {
+      pt: !transactionForm.pt,
+      divisi: !transactionForm.divisi,
+      emergencyName: !transactionForm.emergencyName,
+      emergencyPhone: !transactionForm.emergencyPhone,
+      participants: participants.length === 0,
+    };
+    setFormErrors(errors);
+
+    if (Object.values(errors).some(Boolean)) {
       showToast({
-        title: "No participants added!",
-        description: "Please add at least one participant.",
-        type: "error",
-      });
-      return;
-    }
-    if (
-      !transactionForm.pt ||
-      !transactionForm.divisi ||
-      !transactionForm.emergencyName ||
-      !transactionForm.emergencyPhone
-    ) {
-      showToast({
-        title: "Incomplete data!",
-        description: "Please fill in all fields.",
+        title: "Data belum lengkap!",
+        description: "Lengkapi semua field yang ditandai merah sebelum melanjutkan.",
         type: "error",
       });
       return;
@@ -464,13 +470,13 @@ export default function RegistrationPage() {
                           id="pt"
                           placeholder="Wings Surya"
                           value={transactionForm.pt}
-                          onChange={(e) =>
-                            setTransactionForm({
-                              ...transactionForm,
-                              pt: e.target.value,
-                            })
-                          }
+                          className={formErrors.pt ? "border-red-500 focus-visible:ring-red-400" : ""}
+                          onChange={(e) => {
+                            setTransactionForm({ ...transactionForm, pt: e.target.value });
+                            if (e.target.value) setFormErrors((prev) => ({ ...prev, pt: false }));
+                          }}
                         />
+                        {formErrors.pt && <p className="text-xs text-red-500">PT wajib diisi.</p>}
                       </div>
                       <div className="space-y-1.5">
                         <Label
@@ -484,13 +490,13 @@ export default function RegistrationPage() {
                           id="divisi"
                           placeholder="HRD"
                           value={transactionForm.divisi}
-                          onChange={(e) =>
-                            setTransactionForm({
-                              ...transactionForm,
-                              divisi: e.target.value,
-                            })
-                          }
+                          className={formErrors.divisi ? "border-red-500 focus-visible:ring-red-400" : ""}
+                          onChange={(e) => {
+                            setTransactionForm({ ...transactionForm, divisi: e.target.value });
+                            if (e.target.value) setFormErrors((prev) => ({ ...prev, divisi: false }));
+                          }}
                         />
+                        {formErrors.divisi && <p className="text-xs text-red-500">Divisi wajib diisi.</p>}
                       </div>
                       <div className="space-y-1.5">
                         <Label
@@ -504,13 +510,13 @@ export default function RegistrationPage() {
                           id="emergencyName"
                           placeholder="Jane Doe"
                           value={transactionForm.emergencyName}
-                          onChange={(e) =>
-                            setTransactionForm({
-                              ...transactionForm,
-                              emergencyName: e.target.value,
-                            })
-                          }
+                          className={formErrors.emergencyName ? "border-red-500 focus-visible:ring-red-400" : ""}
+                          onChange={(e) => {
+                            setTransactionForm({ ...transactionForm, emergencyName: e.target.value });
+                            if (e.target.value) setFormErrors((prev) => ({ ...prev, emergencyName: false }));
+                          }}
                         />
+                        {formErrors.emergencyName && <p className="text-xs text-red-500">Nama kontak darurat wajib diisi.</p>}
                       </div>
                       <div className="space-y-1.5">
                         <Label
@@ -524,13 +530,13 @@ export default function RegistrationPage() {
                           id="emergencyPhone"
                           placeholder="08xxxxxxxxxx"
                           value={transactionForm.emergencyPhone}
-                          onChange={(e) =>
-                            setTransactionForm({
-                              ...transactionForm,
-                              emergencyPhone: e.target.value,
-                            })
-                          }
+                          className={formErrors.emergencyPhone ? "border-red-500 focus-visible:ring-red-400" : ""}
+                          onChange={(e) => {
+                            setTransactionForm({ ...transactionForm, emergencyPhone: e.target.value });
+                            if (e.target.value) setFormErrors((prev) => ({ ...prev, emergencyPhone: false }));
+                          }}
                         />
+                        {formErrors.emergencyPhone && <p className="text-xs text-red-500">No. telepon darurat wajib diisi.</p>}
                       </div>
                     </div>
 
@@ -548,11 +554,10 @@ export default function RegistrationPage() {
                       </div>
 
                       {participants.length === 0 ? (
-                        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                          <UserPlus className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm text-gray-400">
-                            Belum ada peserta. Klik tombol di atas untuk
-                            menambah.
+                        <div className={`text-center py-12 rounded-xl border-2 border-dashed ${formErrors.participants ? "bg-red-50 border-red-300" : "bg-gray-50 border-gray-200"}`}>
+                          <UserPlus className={`w-8 h-8 mx-auto mb-2 ${formErrors.participants ? "text-red-300" : "text-gray-300"}`} />
+                          <p className={`text-sm ${formErrors.participants ? "text-red-400 font-medium" : "text-gray-400"}`}>
+                            {formErrors.participants ? "Minimal 1 peserta harus ditambahkan." : "Belum ada peserta. Klik tombol di atas untuk menambah."}
                           </p>
                         </div>
                       ) : (
