@@ -428,7 +428,7 @@ export default function RegistrationPage() {
           </div>
 
           {/* Registration closed gate */}
-          {registrationOpen === false && activeTab !== "recap" ? (
+          {registrationOpen === false && activeTab === "register" ? (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 flex flex-col items-center text-center gap-4">
               <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
                 <ShieldCheck className="w-8 h-8 text-red-400" />
@@ -952,7 +952,7 @@ export default function RegistrationPage() {
                             value={selectedParticipant?.uuid || ""}
                             size={220}
                             level="H"
-                            includeMargin={false}
+                            marginSize={0}
                           />
                         </div>
                         <div className="text-center">
